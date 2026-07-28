@@ -1,0 +1,7 @@
+# Data Gate stage dependencies (tested with Python 3.11).
+# Model-stage packages (xgboost, mlflow, ...) will be added at the Model Gate.
+pandas==3.0.5
+matplotlib==3.11.1
+scikit-learn==1.9.0
+requests==2.33.1
+jupyter

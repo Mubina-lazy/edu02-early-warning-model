@@ -216,3 +216,18 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- Project data: raw/processed data is never committed (download by script) ---
+data/raw/
+data/processed/
+*.zip
+
+# --- Experiment / model artifacts (Model Gate onward) ---
+mlruns/
+models/*.pkl
+models/*.joblib
+
+# --- Editors / OS ---
+.vscode/
+.idea/
+.DS_Store
