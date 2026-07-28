@@ -151,4 +151,4 @@ _To be completed with the demo._ Planned shape:
 
 ## 16. Author
 
-**Mubina — _[TODO: replace with your full name as registered in the LMS]_**
+**Mubina Tulkinjonova**
