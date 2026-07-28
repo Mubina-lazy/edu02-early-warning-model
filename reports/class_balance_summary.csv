@@ -1,0 +1,6 @@
+scope,students,at_risk,not_at_risk,at_risk_pct,not_at_risk_pct
+all rows (raw dataset),32593,17208,15385,52.8,47.2
+modeling population (still enrolled at cutoff),26241,10856,15385,41.4,58.6
+train split,11309,4739,6570,41.9,58.1
+validation split,6186,2828,3358,45.7,54.3
+test split,8746,3289,5457,37.6,62.4
