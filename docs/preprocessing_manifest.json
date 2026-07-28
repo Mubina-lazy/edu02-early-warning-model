@@ -1,0 +1,92 @@
+{
+  "project_type": "tabular",
+  "target_or_objective": "Binary classification: at_risk = 1 if final_result in {Withdrawn, Fail}, else 0. Population: students still enrolled at the cutoff day (25% of the module-presentation length).",
+  "split_strategy": "Chronological by module-presentation: train = 2013B+2013J, validation = 2014B, test = 2014J (src/make_split.py).",
+  "fit_boundary": "All learned preprocessing is fitted on training data only.",
+  "numerical_features": [
+    "early_total_clicks (VLE sum_click, days <= cutoff only)",
+    "early_active_days (distinct VLE days <= cutoff)",
+    "early_clicks_per_active_day",
+    "days_since_last_activity_at_cutoff",
+    "early_tma_mean_score (TMAs due AND submitted by cutoff, non-banked)",
+    "early_tma_submitted_count",
+    "early_tma_due_count",
+    "date_registration (days before course start)",
+    "num_of_prev_attempts",
+    "studied_credits"
+  ],
+  "categorical_features": [
+    "code_module",
+    "gender",
+    "region",
+    "highest_education",
+    "imd_band (labels normalized, missing kept as 'Missing' category)",
+    "age_band",
+    "disability"
+  ],
+  "text_features": [],
+  "image_manifest_path": null,
+  "excluded_features": [
+    {
+      "feature": "final_result",
+      "reason": "target itself (leakage: Critical)"
+    },
+    {
+      "feature": "date_unregistration",
+      "reason": "target proxy revealing withdrawal; used only for the DQ-04 population rule with unregistrations known by the cutoff"
+    },
+    {
+      "feature": "id_student",
+      "reason": "identifier, not a feature"
+    },
+    {
+      "feature": "assessment scores due or submitted after cutoff (incl. all Exams and CMAs outside allowed set)",
+      "reason": "unavailable at prediction time (leakage: High)"
+    },
+    {
+      "feature": "VLE clicks after cutoff / whole-course click totals",
+      "reason": "unavailable at prediction time (leakage: High)"
+    },
+    {
+      "feature": "is_banked submissions",
+      "reason": "result carried over from a previous presentation, not earned in this run's early window"
+    },
+    {
+      "feature": "code_presentation",
+      "reason": "encodes the split boundary (train presentations never appear at test time); cohort effects discussed at Model Gate"
+    }
+  ],
+  "preprocessing_steps": [
+    {
+      "name": "build early-window features from raw tables (cutoff filter from src/config.py)",
+      "fit_on": "train",
+      "implementation_path": "src/features.py (planned - first Model Gate step)"
+    },
+    {
+      "name": "normalize imd_band labels; encode missing imd_band as 'Missing'",
+      "fit_on": "train",
+      "implementation_path": "src/preprocessing.py (planned - Model Gate)"
+    },
+    {
+      "name": "median imputation + missing-indicator for date_registration; indicator + neutral fill for early-TMA features (DQ-03/DQ-05)",
+      "fit_on": "train",
+      "implementation_path": "src/preprocessing.py (planned - Model Gate)"
+    },
+    {
+      "name": "one-hot encode categoricals (handle_unknown='ignore')",
+      "fit_on": "train",
+      "implementation_path": "src/preprocessing.py (planned - Model Gate)"
+    },
+    {
+      "name": "standard scaling for linear models only",
+      "fit_on": "train",
+      "implementation_path": "src/preprocessing.py (planned - Model Gate)"
+    }
+  ],
+  "model_ready_output": {
+    "status": "ready",
+    "train_shape": "11309 rows x split membership (features built at Model Gate)",
+    "validation_shape": "6186 rows",
+    "named_blocker": null
+  }
+}
