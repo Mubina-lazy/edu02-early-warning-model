@@ -1,0 +1,4 @@
+split,rows,target_rate_or_objective_summary,date_min,date_max,unique_groups,notes
+train,11309,at_risk rate 0.419,2013B,2013J,9,"11,205 unique students; modules ['AAA', 'BBB', 'DDD', 'EEE', 'FFF', 'GGG']"
+validation,6186,at_risk rate 0.457,2014B,2014B,6,"5,931 unique students; modules ['BBB', 'CCC', 'DDD', 'EEE', 'FFF', 'GGG']; 558 students also in train"
+test,8746,at_risk rate 0.376,2014J,2014J,7,"8,441 unique students; modules ['AAA', 'BBB', 'CCC', 'DDD', 'EEE', 'FFF', 'GGG']; 678 students also in train"

@@ -1,48 +1,71 @@
-# PROJECT STATUS
+# Project Status
 
-**Project:** Student Performance Early-Warning Model (EDU-02, Field-Based Scenario)
-**Student:** Mubina
-**Current stage:** Data Gate (course route step 3 — data audit, EDA, split, leakage prevention)
-**Gate self-assessment:** _pending review with mentor_
+## Project
 
----
+Student Performance Early-Warning Model (EDU-02, Field-Based Scenario Track, OULAD dataset)
 
-## Course route progress
+## Current stage
 
-| # | Stage | Status |
-|---|-------|--------|
-| 1 | Scope and problem definition | ✅ Done — approved Project Brief (EDU-02, OULAD, binary risk target) |
-| 2 | GitHub repository and project organization | ✅ Done — structure, README skeleton, requirements, .gitignore |
-| 3 | Data audit, EDA, preprocessing, leakage prevention | 🟡 In progress — this is the current gate |
-| 4 | Baseline, experiments, MLflow, model selection | ⬜ Not started (blocked until Data Gate review) |
-| 5 | Final inference/demo workflow | ⬜ Not started |
-| 6 | Reproducibility, documentation, submission, defense prep | ⬜ Not started |
+Data Gate complete — awaiting mentor review before Model Gate (course route step 3 → 4 boundary)
 
-## Data Gate checklist (from M8C3)
+## Completed
+
+- Scope and problem definition: approved Project Brief (EDU-02; binary
+  at-risk target; early-course prediction point; presentation-based split;
+  Recall/F1 primary metrics).
+- Repository setup: 16-section README skeleton, AGENTS.md, requirements.txt,
+  .gitignore, folder structure (`data/`, `notebooks/`, `src/`, `docs/`,
+  `reports/`).
+- Dataset acquisition: `src/download_data.py` (official site + authors'
+  GitHub mirror fallback), all 7 tables' row counts validated against the
+  OULAD paper; source, license, limitations in `data/README.md`.
+- Data audit + EDA with written conclusions:
+  `notebooks/01_data_audit_eda.ipynb` (executed, sections A–F) and
+  `docs/data_audit.md`; figures in `reports/figures/`.
+- Data-quality issue log: `docs/issue_log.csv` (DQ-01…DQ-08).
+- Leakage register and controls: `docs/data_audit.md` §5 + machine-checkable
+  constants in `src/config.py`.
+- Preprocessing design (leakage-safe, fit-on-train-only):
+  `docs/preprocessing_manifest.json`.
+- Train/validation/test split by module-presentation:
+  `src/make_split.py` → train 2013B+2013J (11,309 rows, 41.9% at risk),
+  validation 2014B (6,186, 45.7%), test 2014J (8,746, 37.6%);
+  verification in `reports/split_summary.csv`.
+
+## Current task
+
+Data Gate review with mentor. Gate self-assessment: **Yellow** — evidence is
+complete; one named open decision (DQ-06: module CCC has no 2013 training
+data — keep with per-module reporting vs exclude from headline metric).
+
+## Next
+
+- Review Data Gate evidence with mentor; resolve DQ-06.
+- On Green: start Model Gate (course Class 4) — early-window feature
+  building (`src/features.py`), baseline DummyClassifier + Logistic
+  Regression, MLflow tracking, then Random Forest and XGBoost.
+- **No modeling before the mentor review** (explicit project rule).
+
+## Known problems / blockers
+
+- DQ-06 (mentor decision pending) — see `docs/issue_log.csv`.
+- Sandbox note: the official OULAD URL is blocked by this cloud
+  environment's network policy, so data here was fetched with
+  `--source mirror` (the dataset authors' own GitHub package) and validated
+  against published row counts. In Colab/local runs the default official
+  source works.
+
+## Data Gate checklist (M8C3)
 
 | Done | Gate condition | Evidence |
 |------|----------------|----------|
-| ⬜ | Data source and usage conditions documented | `data/README.md` |
-| ⬜ | Target/objective clear and matches project scope | `docs/data_audit.md` §1 |
-| ⬜ | EDA/data audit has written conclusions | `docs/data_audit.md` §2–§6, `notebooks/01_data_audit_eda.ipynb` |
-| ⬜ | Data-quality issue log complete enough to guide decisions | `docs/data_audit.md` issue log |
-| ⬜ | Split strategy matches real use, visible proof | `src/make_split.py`, `docs/data_audit.md` split section |
-| ⬜ | Leakage risks identified and controlled | `docs/data_audit.md` leakage register, `src/config.py` |
-| ⬜ | Preprocessing reusable or explicitly planned | `docs/data_audit.md` preprocessing plan |
-| ⬜ | Model-ready inputs exist or named blocker recorded | `docs/data_audit.md` model-ready status |
-| ⬜ | PROJECT_STATUS.md and repository evidence current | this file |
-| ⬜ | Verified Data Gate commit visible | git history |
-
-## Next action
-
-Complete the Data Gate items above, then **stop and review the evidence with
-the mentor before starting Model Gate work** (baseline, MLflow, experiments —
-course Class 4). Do not begin modeling before that review.
-
-## Decisions log (short)
-
-- Target = binary: at risk (Withdrawn/Fail) vs not at risk (Pass/Distinction).
-- Prediction point = first ~25–30% of each module-presentation.
-- Split = by module-presentation (time-aware), not random.
-- Primary metrics = Recall and F1 (at-risk class); PR-AUC supporting.
-- Raw OULAD data is downloaded by script, never committed.
+| ✅ | Data source and usage conditions documented | `data/README.md` |
+| ✅ | Target/objective clear and matches project scope | `docs/data_audit.md` §1 |
+| ✅ | EDA/data audit has written conclusions | `docs/data_audit.md` §2, `notebooks/01_data_audit_eda.ipynb` |
+| ✅ | Data-quality issue log complete | `docs/data_audit.md` §3, `docs/issue_log.csv` |
+| ✅ | Split strategy matches real use, visible proof | `src/make_split.py`, `reports/split_summary.csv` |
+| ✅ | Leakage risks identified and controlled | `docs/data_audit.md` §5, `src/config.py` |
+| ✅ | Preprocessing reusable or explicitly planned | `docs/preprocessing_manifest.json` |
+| ✅ | Model-ready inputs exist or named blocker recorded | `docs/data_audit.md` §6/§8 (split files regenerable; features = first Model Gate step) |
+| ✅ | PROJECT_STATUS.md and repository evidence current | this file |
+| ✅ | Verified Data Gate commit visible | git history (`data: complete Data Gate audit and leakage-safe pipeline`) |
