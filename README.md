@@ -224,4 +224,4 @@ Output:
 
 ## 16. Author
 
-**Mubina Tulkinjonova**
+**Mubinabegim To'lqinjonova**
