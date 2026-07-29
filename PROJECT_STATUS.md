@@ -6,83 +6,76 @@ Student Performance Early-Warning Model (EDU-02, Field-Based Scenario Track, OUL
 
 ## Current stage
 
-Model Gate (course route step 4) — features and baselines done; experiments (Random Forest, XGBoost) next
+Complete — ready for submission preparation and defense rehearsal
 
 ## Completed
 
-- Scope and problem definition: approved Project Brief (EDU-02; binary
-  at-risk target; early-course prediction point; presentation-based split;
-  Recall/F1 primary metrics).
-- Repository setup: 16-section README skeleton, AGENTS.md, requirements.txt,
-  .gitignore, folder structure (`data/`, `notebooks/`, `src/`, `docs/`,
-  `reports/`).
-- Dataset acquisition: `src/download_data.py` (official site + authors'
-  GitHub mirror fallback), all 7 tables' row counts validated against the
-  OULAD paper; source, license, limitations in `data/README.md`.
-- Data audit + EDA with written conclusions:
-  `notebooks/01_data_audit_eda.ipynb` (executed, sections A–F) and
-  `docs/data_audit.md`; figures in `reports/figures/`.
-- Data-quality issue log: `docs/issue_log.csv` (DQ-01…DQ-08).
-- Leakage register and controls: `docs/data_audit.md` §5 + machine-checkable
-  constants in `src/config.py`.
-- Preprocessing design (leakage-safe, fit-on-train-only):
-  `docs/preprocessing_manifest.json`.
-- Train/validation/test split by module-presentation:
-  `src/make_split.py` → train 2013B+2013J (11,309 rows, 41.9% at risk),
-  validation 2014B (6,186, 45.7%), test 2014J (8,746, 37.6%);
-  verification in `reports/split_summary.csv`.
+- **Scope** (course step 1): approved EDU-02 brief — binary at-risk target,
+  early prediction point (25% of the course), presentation-based split,
+  Recall/F1 primary metrics.
+- **Repository** (step 2): 16-section README, reproducible scripts,
+  pinned dependencies, no raw data in Git.
+- **Data Gate** (step 3): full audit with written conclusions
+  (`docs/data_audit.md`, `notebooks/01_data_audit_eda.ipynb`), issue log
+  DQ-01…DQ-08, leakage register + `src/config.py` controls,
+  presentation-based split (train 2013B+2013J / validation 2014B / test
+  2014J). Mentor review: "a very strong and well-organized Data Gate" —
+  Green after three applied corrections (CCC protocol, DQ-07 counts,
+  pyreadr dependency).
+- **Model Gate** (step 4): 18 leakage-safe early-window features
+  (`src/features.py`); 7 MLflow runs — 2 baselines
+  (`src/train_baseline.py`) + 5 hypothesis-driven experiments
+  (`src/train_experiments.py`); final model = XGBoost with operating
+  threshold 0.327 (validation F1 0.716, PR-AUC 0.810); selection evidence
+  in `reports/experiments_results.md`.
+- **Final evaluation** (one-shot, frozen test 2014J):
+  recall 0.760 / precision 0.583 / F1 0.660 / PR-AUC 0.714 at the operating
+  threshold; DQ-06 protocol honored (with/without CCC + per-module table);
+  fairness slices and false-negative error analysis in
+  `reports/final_evaluation.md`.
+- **Inference & demo** (step 5): `src/predict.py` (validated inputs, risk
+  bands, advisor signals) + executed `demo.ipynb` (Colab-ready, no dataset
+  download needed — the <1 MB model artifact ships with the repo).
+- **Verification pass**: pipeline re-run end-to-end — deterministic outputs,
+  zero row overlap between splits, no banned columns, docs consistent with
+  the data.
 
 ## Current task
 
-Data Gate: **Green.** Mentor reviewed the evidence ("a very strong and
-well-organized Data Gate") and approved moving on after three corrections,
-all applied:
-
-1. DQ-06 decided in advance — CCC is kept as a realistic cold-start course;
-   headline metrics will be reported with and without CCC, plus a mandatory
-   per-module table.
-2. DQ-07 duplicate-student counts made consistent (raw 940/972 vs
-   modeling-population 558/678; the latter, in `reports/split_summary.csv`,
-   are authoritative).
-3. `pyreadr` added to `requirements.txt` for the mirror download path.
-
-Model Gate progress (step 1 done):
-
-- Early-window feature matrices built (`src/features.py`, 18 features,
-  leakage-safe row-wise transforms with a banned-column self-check).
-- Baselines trained and logged to MLflow (`src/train_baseline.py`):
-  Dummy majority = 0.0 at-risk recall at 54.3% accuracy (the accuracy trap,
-  now measured); Logistic Regression = 0.565 recall / 0.821 precision /
-  0.670 F1 / 0.803 PR-AUC on validation (2014B). Details in
-  `reports/baseline_results.md`.
+Submission preparation (course step 6): freeze the repository, prepare the
+LMS submission file (full name, track, title, repo URL, short description),
+rehearse the defense.
 
 ## Next
 
-- Model Gate experiments: Random Forest and XGBoost, class weighting /
-  threshold tuning to raise at-risk recall, several documented MLflow runs,
-  then model selection with evidence.
-- Test set (2014J) stays untouched until the final evaluation.
+- Grant mentors repository access (repo is private) before the deadline.
+- Prepare the LMS PDF/DOCX and defense slides; rehearse the live demo.
+- Optional extensions (explicitly out of scope): periodic re-scoring at
+  later checkpoints, advisor dashboard.
 
 ## Known problems / blockers
 
 - None open.
-- Sandbox note: the official OULAD URL is blocked by this cloud
-  environment's network policy, so data here was fetched with
+- Sandbox note: the official OULAD URL is blocked from the cloud
+  environment used during development, so data there was fetched with
   `--source mirror` (the dataset authors' own GitHub package) and validated
   against published row counts. In Colab/local runs the default official
   source works.
 
-## Data Gate checklist (M8C3)
+## Defense cheat-sheet (the five decisions to be able to explain)
 
-| Done | Gate condition | Evidence |
-|------|----------------|----------|
-| ✅ | Data source and usage conditions documented | `data/README.md` |
-| ✅ | Target/objective clear and matches project scope | `docs/data_audit.md` §1 |
-| ✅ | EDA/data audit has written conclusions | `docs/data_audit.md` §2, `notebooks/01_data_audit_eda.ipynb` |
-| ✅ | Data-quality issue log complete | `docs/data_audit.md` §3, `docs/issue_log.csv` |
-| ✅ | Split strategy matches real use, visible proof | `src/make_split.py`, `reports/split_summary.csv` |
-| ✅ | Leakage risks identified and controlled | `docs/data_audit.md` §5, `src/config.py` |
-| ✅ | Preprocessing reusable or explicitly planned | `docs/preprocessing_manifest.json` |
-| ✅ | Model-ready inputs exist or named blocker recorded | `docs/data_audit.md` §6/§8 (split files regenerable; features = first Model Gate step) |
-| ✅ | PROJECT_STATUS.md and repository evidence current | this file |
-| ✅ | Verified Data Gate commit visible | git history (`data: complete Data Gate audit and leakage-safe pipeline`) |
+1. **Target**: at risk = Withdrawn or Fail — advisors need one actionable
+   binary signal; both outcomes are preventable failures.
+2. **Prediction point**: 25% of each presentation (~day 60–67) — early
+   enough to intervene; everything after that day is banned as leakage
+   (`src/config.py`).
+3. **Population (DQ-04)**: students already unregistered by the cutoff are
+   excluded — their outcome is known at prediction time, "predicting" them
+   would inflate recall.
+4. **Split**: whole future cohorts held out (train 2013 → test 2014J) —
+   mirrors real deployment; a random split would leak repeated students and
+   cohort effects.
+5. **Metrics & threshold**: Recall/F1 over accuracy (a do-nothing model
+   gets 54–62% accuracy with zero recall); threshold 0.327 tuned on
+   validation because missing an at-risk student costs more than an extra
+   advisor check-in.

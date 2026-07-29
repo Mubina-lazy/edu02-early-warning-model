@@ -226,6 +226,8 @@ data/processed/
 mlruns/
 models/*.pkl
 models/*.joblib
+# ...except the final artifact the demo needs (small, <1 MB)
+!models/final_model.joblib
 
 # --- Editors / OS ---
 .vscode/

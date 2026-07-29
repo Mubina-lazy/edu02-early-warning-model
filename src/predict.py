@@ -1,0 +1,131 @@
+"""Reusable inference for the early-warning model.
+
+Turns one student's early-course data (a plain dict) into a risk
+assessment: probability, Low/Medium/High band, flag decision, and
+simple human-readable signals for the advisor.
+
+Used by demo.ipynb; can also be imported by an API later.
+
+    from predict import load_model, predict_risk
+    model, meta = load_model()
+    result = predict_risk(student_dict, model, meta)
+"""
+
+import json
+from pathlib import Path
+
+import joblib
+import pandas as pd
+
+ROOT = Path(__file__).resolve().parent.parent
+
+# field name -> (type, min, max, required). None max = unbounded.
+INPUT_SCHEMA = {
+    "code_module": (str, None, None, True),
+    "gender": (str, None, None, True),
+    "region": (str, None, None, True),
+    "highest_education": (str, None, None, True),
+    "imd_band": (str, None, None, True),
+    "age_band": (str, None, None, True),
+    "disability": (str, None, None, True),
+    "early_total_clicks": (float, 0, None, True),
+    "early_active_days": (float, 0, 70, True),
+    "early_clicks_per_active_day": (float, 0, None, False),
+    "days_since_last_activity": (float, 0, 100, False),  # None = never active
+    "early_tma_due_count": (float, 0, 10, True),
+    "early_tma_submitted_count": (float, 0, 10, True),
+    "early_tma_any_submitted": (float, 0, 1, False),
+    "early_tma_mean_score": (float, 0, 100, False),  # None = nothing submitted
+    "date_registration": (float, -400, 100, False),
+    "num_of_prev_attempts": (float, 0, 10, True),
+    "studied_credits": (float, 0, 700, True),
+}
+VALID_MODULES = {"AAA", "BBB", "CCC", "DDD", "EEE", "FFF", "GGG"}
+
+
+def load_model():
+    model = joblib.load(ROOT / "models" / "final_model.joblib")
+    meta = json.loads((ROOT / "models" / "final_model_meta.json").read_text())
+    return model, meta
+
+
+def validate_input(student: dict) -> list[str]:
+    """Return a list of problems (empty list = input is usable)."""
+    errors = []
+    for field, (ftype, lo, hi, required) in INPUT_SCHEMA.items():
+        if field not in student or student[field] is None:
+            if required:
+                errors.append(f"missing required field: '{field}'")
+            continue
+        value = student[field]
+        if ftype is float:
+            try:
+                value = float(value)
+            except (TypeError, ValueError):
+                errors.append(f"'{field}' must be a number, got {value!r}")
+                continue
+            if lo is not None and value < lo:
+                errors.append(f"'{field}' = {value} is below the minimum {lo}")
+            if hi is not None and value > hi:
+                errors.append(f"'{field}' = {value} is above the maximum {hi}")
+    if student.get("code_module") not in VALID_MODULES:
+        errors.append(f"'code_module' must be one of {sorted(VALID_MODULES)}")
+    subs = student.get("early_tma_submitted_count") or 0
+    due = student.get("early_tma_due_count") or 0
+    if float(subs) > float(due):
+        errors.append("submitted TMA count cannot exceed the number due")
+    return errors
+
+
+def _signals(student: dict) -> list[str]:
+    """Simple rule-based explanations an advisor can act on."""
+    out = []
+    if float(student.get("early_total_clicks") or 0) == 0:
+        out.append("no online activity at all in the early window")
+    elif float(student.get("early_total_clicks") or 0) < 100:
+        out.append("very low online activity (bottom quartile)")
+    d = student.get("days_since_last_activity")
+    if d is not None and float(d) > 21:
+        out.append(f"inactive for {float(d):.0f} days at the check point")
+    if float(student.get("early_tma_due_count") or 0) > 0 and \
+            float(student.get("early_tma_submitted_count") or 0) == 0:
+        out.append("has not submitted any assignment that was already due")
+    score = student.get("early_tma_mean_score")
+    if score is not None and float(score) < 55:
+        out.append(f"low early assignment average ({float(score):.0f})")
+    if float(student.get("num_of_prev_attempts") or 0) > 0:
+        out.append("has previous unsuccessful attempts at this course")
+    return out or ["no obvious warning signals - risk driven by weaker patterns"]
+
+
+def predict_risk(student: dict, model=None, meta=None) -> dict:
+    """Validate the input and return the risk assessment for one student."""
+    errors = validate_input(student)
+    if errors:
+        raise ValueError("invalid input: " + "; ".join(errors))
+    if model is None or meta is None:
+        model, meta = load_model()
+
+    row = {f: student.get(f) for f in INPUT_SCHEMA}
+    # derived field the caller may omit
+    if row.get("early_clicks_per_active_day") is None:
+        days = float(row["early_active_days"]) or 0
+        row["early_clicks_per_active_day"] = (
+            float(row["early_total_clicks"]) / days if days else 0.0
+        )
+    if row.get("early_tma_any_submitted") is None:
+        row["early_tma_any_submitted"] = float(
+            float(row["early_tma_submitted_count"]) > 0
+        )
+
+    proba = float(model.predict_proba(pd.DataFrame([row]))[:, 1][0])
+    threshold = meta["threshold"]
+    band = "High" if proba >= 0.6 else ("Medium" if proba >= threshold else "Low")
+    return {
+        "risk_probability": round(proba, 3),
+        "risk_band": band,
+        "flagged_for_advisor": proba >= threshold,
+        "decision_threshold": round(threshold, 3),
+        "signals": _signals(student),
+        "note": "Decision-support only: an advisor must review every flag.",
+    }

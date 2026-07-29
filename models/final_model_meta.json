@@ -1,0 +1,21 @@
+{
+  "run_name": "E4_xgboost",
+  "threshold": 0.3269398510456085,
+  "validation_metrics": {
+    "recall_at_risk": 0.6983734087694484,
+    "precision_at_risk": 0.7163583605368153,
+    "f1_at_risk": 0.7072515666965085,
+    "accuracy": 0.7356935014548982,
+    "pr_auc": 0.8095086761436519,
+    "tn": 2576.0,
+    "fp": 782.0,
+    "fn": 853.0,
+    "tp": 1975.0,
+    "best_f1_threshold": 0.3269398510456085,
+    "f1_at_best_thr": 0.7164855072463767,
+    "recall_at_best_thr": 0.8391089108910891,
+    "precision_at_best_thr": 0.625131717597471
+  },
+  "trained_on": "2013B+2013J",
+  "threshold_tuned_on": "2014B (validation)"
+}
