@@ -6,7 +6,7 @@ Student Performance Early-Warning Model (EDU-02, Field-Based Scenario Track, OUL
 
 ## Current stage
 
-Data Gate complete — awaiting mentor review before Model Gate (course route step 3 → 4 boundary)
+Model Gate (course route step 4) — features and baselines done; experiments (Random Forest, XGBoost) next
 
 ## Completed
 
@@ -46,11 +46,21 @@ all applied:
    are authoritative).
 3. `pyreadr` added to `requirements.txt` for the mirror download path.
 
+Model Gate progress (step 1 done):
+
+- Early-window feature matrices built (`src/features.py`, 18 features,
+  leakage-safe row-wise transforms with a banned-column self-check).
+- Baselines trained and logged to MLflow (`src/train_baseline.py`):
+  Dummy majority = 0.0 at-risk recall at 54.3% accuracy (the accuracy trap,
+  now measured); Logistic Regression = 0.565 recall / 0.821 precision /
+  0.670 F1 / 0.803 PR-AUC on validation (2014B). Details in
+  `reports/baseline_results.md`.
+
 ## Next
 
-- Start Model Gate (course Class 4) — early-window feature building
-  (`src/features.py`), baseline DummyClassifier + Logistic Regression,
-  MLflow tracking, then Random Forest and XGBoost.
+- Model Gate experiments: Random Forest and XGBoost, class weighting /
+  threshold tuning to raise at-risk recall, several documented MLflow runs,
+  then model selection with evidence.
 - Test set (2014J) stays untouched until the final evaluation.
 
 ## Known problems / blockers

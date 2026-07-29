@@ -1,5 +1,5 @@
 # Data Gate stage dependencies (tested with Python 3.11).
-# Model-stage packages (xgboost, mlflow, ...) will be added at the Model Gate.
+# Model-stage packages: mlflow added at Model Gate; xgboost comes with the experiments.
 pandas==3.0.5
 matplotlib==3.11.1
 scikit-learn==1.9.0
@@ -8,3 +8,4 @@ jupyter
 # Needed for the mirror download path (converts the authors' R .rda files
 # back to CSV): python src/download_data.py --source mirror
 pyreadr==0.5.6
+mlflow==3.14.0

@@ -231,3 +231,7 @@ models/*.joblib
 .vscode/
 .idea/
 .DS_Store
+
+# MLflow local tracking store
+mlflow.db
+mlruns/
