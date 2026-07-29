@@ -34,21 +34,28 @@ Data Gate complete — awaiting mentor review before Model Gate (course route st
 
 ## Current task
 
-Data Gate review with mentor. Gate self-assessment: **Yellow** — evidence is
-complete; one named open decision (DQ-06: module CCC has no 2013 training
-data — keep with per-module reporting vs exclude from headline metric).
+Data Gate: **Green.** Mentor reviewed the evidence ("a very strong and
+well-organized Data Gate") and approved moving on after three corrections,
+all applied:
+
+1. DQ-06 decided in advance — CCC is kept as a realistic cold-start course;
+   headline metrics will be reported with and without CCC, plus a mandatory
+   per-module table.
+2. DQ-07 duplicate-student counts made consistent (raw 940/972 vs
+   modeling-population 558/678; the latter, in `reports/split_summary.csv`,
+   are authoritative).
+3. `pyreadr` added to `requirements.txt` for the mirror download path.
 
 ## Next
 
-- Review Data Gate evidence with mentor; resolve DQ-06.
-- On Green: start Model Gate (course Class 4) — early-window feature
-  building (`src/features.py`), baseline DummyClassifier + Logistic
-  Regression, MLflow tracking, then Random Forest and XGBoost.
-- **No modeling before the mentor review** (explicit project rule).
+- Start Model Gate (course Class 4) — early-window feature building
+  (`src/features.py`), baseline DummyClassifier + Logistic Regression,
+  MLflow tracking, then Random Forest and XGBoost.
+- Test set (2014J) stays untouched until the final evaluation.
 
 ## Known problems / blockers
 
-- DQ-06 (mentor decision pending) — see `docs/issue_log.csv`.
+- None open.
 - Sandbox note: the official OULAD URL is blocked by this cloud
   environment's network policy, so data here was fetched with
   `--source mirror` (the dataset authors' own GitHub package) and validated

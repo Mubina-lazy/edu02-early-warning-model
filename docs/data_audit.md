@@ -37,8 +37,8 @@ Machine-readable copy: [`docs/issue_log.csv`](issue_log.csv).
 | DQ-03 | 173 submitted assessments have no `score`; unsubmitted TMAs simply have no row | notebook §B | Early-TMA features would silently become NaN/0 and mix "not submitted" with "scored 0" | Explicit indicator | Early-TMA features get a paired "submitted yes/no" flag; missing score ≠ 0 | Controlled |
 | DQ-04 | 6,352 students (19.5%) unregistered on/before the cutoff day; their outcome is already known at prediction time | notebook §F | Keeping them inflates recall with "predictions" of already-known outcomes (answer-key effect) | Exclude from modeling population | Population = still enrolled at cutoff; implemented in `src/make_split.py`; at-risk rate becomes 41.4% | Resolved |
 | DQ-05 | GGG-2014B has **zero** TMAs due by the cutoff (all other module-presentations have 1–3) | notebook §F | Early-TMA features undefined for one course run | Tolerate absence | Features must handle "no TMA due yet" as a valid state (indicator + neutral value), not an error | Controlled |
-| DQ-06 | Module CCC exists only in 2014B/2014J → no CCC data in the 2013 training era | notebook §E | Model sees CCC students in validation/test with zero CCC training examples; per-module test scores will be confounded | Flag for mentor at gate review | Recommended default: keep CCC, report per-module metrics, discuss excluding CCC from headline metric | **Open (mentor)** |
-| DQ-07 | 972 students (~9% of test) appear in both training-era and test-era presentations | notebook §E | Weak group leakage: same person on both sides (different course runs) | Accept with evidence | Returning students also exist in real deployment; features are presentation-specific; documented, not removed | Accepted |
+| DQ-06 | Module CCC exists only in 2014B/2014J → no CCC data in the 2013 training era | notebook §E | Model sees CCC students in validation/test with zero CCC training examples; per-module test scores will be confounded | **Decided before Model Gate (mentor-endorsed): keep CCC** as a realistic "new course" cold-start case | Evaluation protocol fixed in advance: headline metrics reported on the full test set **and** on test excluding CCC; per-module metric table mandatory; CCC results clearly marked as a course with no training data | Resolved |
+| DQ-07 | Repeated students across split sides. In the **modeling population** (after DQ-04): 558 validation and 678 test students (8.0% of test) also appear in train. On the **raw dataset** before filtering: 940 and 972 (~9%) — the notebook §E numbers. Both are stated because they describe different populations; the authoritative post-filtering counts are in `reports/split_summary.csv` | notebook §E (raw); `reports/split_summary.csv` (final) | Weak group leakage: same person on both sides (different course runs) | Accept with evidence | Returning students also exist in real deployment; features are presentation-specific; documented, not removed | Accepted |
 | DQ-08 | 45 rows missing `date_registration`; 8 rows unregistered before cutoff but marked Fail (not Withdrawn) | notebook §B, §F | Negligible volume; odd records could confuse features | Keep with defaults | Missing registration date → impute + flag; the 8 odd rows are excluded by the DQ-04 rule anyway | Controlled |
 
 ## 4. Split decision
@@ -104,17 +104,20 @@ not planned; metric choice (Recall/F1, PR-AUC) addresses the remaining
 imbalance.
 
 ## 8. Data Gate status
-- **Status:** **Yellow** — evidence complete, awaiting the mentor review the
-  student explicitly scheduled, with one named open decision (DQ-06: CCC
-  cold-start handling).
+- **Status:** **Green** — mentor reviewed the Data Gate ("a very strong and
+  well-organized Data Gate") and approved moving to the Model Gate after three
+  named corrections, all applied:
+  1. DQ-06 decided in advance: keep CCC; evaluation protocol fixed (headline
+     metrics with and without CCC + mandatory per-module table).
+  2. DQ-07 duplicate-student counts made consistent: raw-dataset numbers
+     (940/972) vs modeling-population numbers (558/678, the authoritative
+     ones in `reports/split_summary.csv`) are now clearly distinguished.
+  3. `pyreadr` added to `requirements.txt` for the mirror download path.
 - **Evidence links:** `notebooks/01_data_audit_eda.ipynb`, `docs/issue_log.csv`,
   `reports/split_summary.csv`, `reports/figures/`, `src/config.py`,
   `src/make_split.py`, `data/README.md`, `PROJECT_STATUS.md`
-- **Named correction/blocker:** decide DQ-06 (keep CCC with per-module
-  reporting vs exclude CCC from headline metric) with the mentor before
-  baseline work.
-- **Owner and due point:** Mubina + mentor, at the Data Gate review (before
-  course Class 4 / Model Gate).
-- **Next action:** review this document and the notebook with the mentor;
-  on Green, start Model Gate (baseline DummyClassifier + Logistic Regression,
-  MLflow tracking) per the approved brief.
+- **Named correction/blocker:** none remaining.
+- **Owner and due point:** Mubina; corrections applied before Model Gate work.
+- **Next action:** Model Gate (course Class 4): early-window feature building,
+  baseline DummyClassifier + Logistic Regression, MLflow tracking, then
+  Random Forest and XGBoost per the approved brief.
