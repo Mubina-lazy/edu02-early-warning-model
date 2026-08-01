@@ -93,7 +93,7 @@ def main() -> None:
               "|---|---|---|---|---|---|"]
     for name, m in base_metrics.items():
         lines += [f"| {name} | 0.5 | {m['recall']:.3f} | {m['precision']:.3f} "
-                  f"| {m['f1']:.3f} | — |"]
+                  f"| {m['f1']:.3f} | - |"]
     lines += [f"| **XGBoost (final)** | 0.5 | {ref_m['recall']:.3f} "
               f"| {ref_m['precision']:.3f} | {ref_m['f1']:.3f} | {pr_auc:.3f} |",
               f"| **XGBoost (final)** | **{thr:.3f}** | **{main_m['recall']:.3f}** "

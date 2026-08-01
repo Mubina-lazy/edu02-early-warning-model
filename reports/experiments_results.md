@@ -5,6 +5,13 @@ logged to MLflow (`mlflow.db`; run `mlflow ui --backend-store-uri
 sqlite:///mlflow.db`). Implementation: `src/train_baseline.py`,
 `src/train_experiments.py`. Random seed 42 everywhere.
 
+The MLflow store itself is a local file and stays out of Git, so the run log
+is exported to **[`reports/mlflow_runs.csv`](mlflow_runs.csv)**
+(`python src/export_mlflow_runs.py`) - 40 logged runs over 8 distinct run
+names. The repeats are re-executions from the verification pass, and every
+repeat of a run name reproduces **identical** metrics, which is the
+determinism evidence for this pipeline.
+
 "Tuned thr" = decision threshold maximizing F1 on validation (the default
 0.5 is just a convention; an early-warning system should pick its operating
 point deliberately).

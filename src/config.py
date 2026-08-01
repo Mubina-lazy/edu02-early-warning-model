@@ -32,7 +32,7 @@ BANNED_COLUMNS = {
 }
 
 # Population rule (issue DQ-04): a student whose unregistration date is on
-# or before the cutoff is NOT part of the modeling population — their
+# or before the cutoff is NOT part of the modeling population - their
 # outcome is already known at prediction time.
 EXCLUDE_UNREGISTERED_BY_CUTOFF = True
 

@@ -117,6 +117,32 @@ at-risk student is costlier than a false alarm. **Supporting metric: PR-AUC.**
 Accuracy alone is not used as a headline metric because the classes are
 imbalanced.
 
+### Success criteria
+
+The system is useful only if it beats what a university could do with no
+model at all, so the bar is set against the baselines rather than against a
+round number:
+
+1. **At-risk recall must be far above the majority-class baseline.** That
+   baseline scores 0.000 recall (it flags nobody), so any usable model must
+   catch a clear majority of at-risk students: **recall >= 0.70**.
+2. **Precision must stay meaningfully above the cohort's base rate.** Flagging
+   at random would be right 37.6% of the time on the test cohort, so flags are
+   only worth an advisor's time at **precision >= 0.50**.
+3. **Ranking quality must beat the no-skill floor.** PR-AUC must exceed the
+   base rate 0.376 by a wide margin, since advisors work from a ranked list.
+4. **The model must beat plain logistic regression on recall**, otherwise the
+   added complexity is not justified.
+
+Decisions fixed *before* the test set was touched: the primary metrics (in the
+approved brief), the population rule (DQ-04), the split, the leakage bans in
+`src/config.py`, the decision threshold (tuned on validation only), and the
+DQ-06 evaluation protocol of reporting with and without module CCC. The four
+numeric bars above are derived from the baselines and the cohort base rate,
+and were written into this README after the experiments were run - they are
+stated here so the result can be judged against a rule rather than against
+hindsight, not as a claim of pre-registration.
+
 Final results on the frozen test cohort (2014J, evaluated exactly once  -
 full report in [reports/final_evaluation.md](reports/final_evaluation.md)):
 
