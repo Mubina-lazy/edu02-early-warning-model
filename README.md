@@ -249,3 +249,23 @@ Output:
 ## 16. Author
 
 **Mubinabegim To'lqinjonova**
+
+---
+
+## Acknowledgements and sources
+
+- **Dataset:** OULAD - Open University Learning Analytics Dataset. Kuzilek, J.,
+  Hlosta, M. & Zdrahal, Z. *Open University Learning Analytics dataset.*
+  Scientific Data 4, 170171 (2017). <https://doi.org/10.1038/sdata.2017.171>
+  Licensed CC-BY 4.0. Fallback mirror: the authors' own R package,
+  <https://github.com/jakubkuzilek/oulad>.
+- **Libraries:** scikit-learn, XGBoost, pandas, NumPy, MLflow, joblib,
+  matplotlib, pyreadr - versions pinned in `requirements.txt`. No pretrained
+  model was used; the classifier was trained from scratch on the training
+  presentations.
+- **AI assistance:** an AI coding assistant (Claude) was used for scaffolding,
+  refactoring and documentation support, as permitted by the Module 8 rules.
+  Every change was reviewed and tested; the problem framing, modelling and
+  evaluation decisions are the author's own, and the assistance is visible in
+  the commit history (`Co-Authored-By` trailers). No external AI service or
+  hosted API is presented as the project's model.
