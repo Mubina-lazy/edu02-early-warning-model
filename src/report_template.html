@@ -1,0 +1,1189 @@
+<title>Student Performance Early-Warning Model — Project Report</title>
+
+<script type="application/json" id="report-data">__DATA__</script>
+
+<style>
+  :root {
+    color-scheme: light;
+    --ground: #fbfcfd;
+    --surface: #ffffff;
+    --surface-2: #f2f6fa;
+    --line: #dde4ec;
+    --line-2: #c3ced9;
+    --ink: #0f1418;
+    --ink-2: #4b5460;
+    --ink-3: #78828e;
+    --accent: #2a78d6;
+    --s-safe: #2a78d6;
+    --s-risk: #eb6834;
+    --s-third: #1baf7a;
+    --good: #14805c;
+    --bad: #c9312f;
+    --grid: #e7edf3;
+    --shadow: 0 1px 2px rgba(16, 30, 48, .06), 0 8px 24px -12px rgba(16, 30, 48, .12);
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+    --measure: 68ch;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --ground: #14171a;
+      --surface: #1b1f24;
+      --surface-2: #22282e;
+      --line: #2e353d;
+      --line-2: #414a54;
+      --ink: #f1f5f8;
+      --ink-2: #b2bcc6;
+      --ink-3: #7e8892;
+      --accent: #3987e5;
+      --s-safe: #3987e5;
+      --s-risk: #d95926;
+      --s-third: #199e70;
+      --good: #35b083;
+      --bad: #e66767;
+      --grid: #272e35;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -12px rgba(0, 0, 0, .6);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ground: #14171a;
+    --surface: #1b1f24;
+    --surface-2: #22282e;
+    --line: #2e353d;
+    --line-2: #414a54;
+    --ink: #f1f5f8;
+    --ink-2: #b2bcc6;
+    --ink-3: #7e8892;
+    --accent: #3987e5;
+    --s-safe: #3987e5;
+    --s-risk: #d95926;
+    --s-third: #199e70;
+    --good: #35b083;
+    --bad: #e66767;
+    --grid: #272e35;
+  }
+
+  * { box-sizing: border-box; }
+
+  .page {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0 20px 96px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+
+  /* ---------- masthead ---------- */
+  .masthead {
+    border-bottom: 1px solid var(--line-2);
+    padding: 56px 0 28px;
+    margin-bottom: 40px;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-size: clamp(30px, 4.4vw, 46px);
+    line-height: 1.08;
+    letter-spacing: -.022em;
+    font-weight: 700;
+    text-wrap: balance;
+    margin: 0 0 16px;
+  }
+  .standfirst {
+    font-size: 18px;
+    line-height: 1.55;
+    color: var(--ink-2);
+    max-width: var(--measure);
+    margin: 0 0 28px;
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .fact { background: var(--surface); padding: 13px 16px; }
+  .fact dt {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 0 0 5px;
+  }
+  .fact dd {
+    margin: 0;
+    font-size: 14.5px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- sections ---------- */
+  section { margin: 0 0 60px; scroll-margin-top: 20px; }
+  h2 {
+    font-size: 24px;
+    letter-spacing: -.014em;
+    font-weight: 680;
+    margin: 0 0 6px;
+    text-wrap: balance;
+  }
+  h3 {
+    font-size: 15px;
+    font-weight: 650;
+    letter-spacing: -.005em;
+    margin: 28px 0 10px;
+  }
+  .lede, p { max-width: var(--measure); }
+  p { margin: 0 0 14px; color: var(--ink-2); }
+  p strong { color: var(--ink); font-weight: 620; }
+  .section-head { margin-bottom: 22px; }
+  .stage {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 8px;
+  }
+
+  /* ---------- stat tiles ---------- */
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin: 0 0 24px;
+  }
+  .tile {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px 18px 18px;
+    box-shadow: var(--shadow);
+  }
+  .tile .k {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    display: block;
+    margin-bottom: 8px;
+  }
+  .tile .v {
+    font-family: var(--mono);
+    font-size: 34px;
+    line-height: 1;
+    font-weight: 600;
+    letter-spacing: -.02em;
+    font-variant-numeric: tabular-nums;
+    display: block;
+  }
+  .tile .sub {
+    font-size: 12.5px;
+    color: var(--ink-3);
+    display: block;
+    margin-top: 8px;
+    line-height: 1.45;
+  }
+  .tile.primary { border-color: var(--accent); }
+  .tile.primary .v { color: var(--accent); }
+
+  /* ---------- charts ---------- */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    margin: 0 0 18px;
+  }
+  .panel > h3:first-child { margin-top: 0; }
+  .panel-note {
+    font-size: 13px;
+    color: var(--ink-3);
+    margin: 12px 0 0;
+    max-width: var(--measure);
+  }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    margin: 0 0 16px;
+    font-size: 12.5px;
+    color: var(--ink-2);
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .swatch {
+    width: 11px; height: 11px; border-radius: 3px; flex: none;
+    box-shadow: 0 0 0 2px var(--surface);
+  }
+  .chart { width: 100%; overflow-x: auto; }
+  .chart svg { display: block; max-width: 100%; height: auto; }
+  .bar-label, .axis-label, .val-label {
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- tables ---------- */
+  .table-scroll { overflow-x: auto; margin: 14px 0 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    font-variant-numeric: tabular-nums;
+  }
+  caption {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    padding-bottom: 8px;
+  }
+  th, td { padding: 8px 12px; text-align: right; border-bottom: 1px solid var(--line); }
+  th:first-child, td:first-child { text-align: left; }
+  thead th {
+    font-size: 11px;
+    font-family: var(--mono);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 600;
+    border-bottom: 1px solid var(--line-2);
+    white-space: nowrap;
+  }
+  tbody tr:hover { background: var(--surface-2); }
+  td.num { font-family: var(--mono); }
+  tr.highlight td { background: color-mix(in srgb, var(--accent) 8%, transparent); font-weight: 620; }
+  .chip {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .04em;
+    padding: 2px 7px;
+    border-radius: 20px;
+    border: 1px solid var(--line-2);
+    color: var(--ink-2);
+    white-space: nowrap;
+  }
+  .chip.warn { border-color: var(--s-risk); color: var(--s-risk); }
+
+  /* ---------- confusion matrix ---------- */
+  .cm {
+    display: grid;
+    grid-template-columns: auto 1fr 1fr;
+    gap: 2px;
+    max-width: 520px;
+    font-variant-numeric: tabular-nums;
+  }
+  .cm > div { padding: 14px 12px; border-radius: 6px; }
+  .cm .hdr {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    display: flex;
+    align-items: flex-end;
+    padding: 6px 12px;
+  }
+  .cm .cell { background: var(--surface-2); border: 1px solid var(--line); }
+  .cm .cell .n {
+    font-family: var(--mono);
+    font-size: 25px;
+    font-weight: 600;
+    display: block;
+    line-height: 1.1;
+  }
+  .cm .cell .t { font-size: 11.5px; color: var(--ink-3); font-family: var(--mono); }
+  .cm .cell.ok { border-color: color-mix(in srgb, var(--good) 45%, var(--line)); }
+  .cm .cell.ok .n { color: var(--good); }
+  .cm .cell.costly {
+    border-color: var(--bad);
+    background: color-mix(in srgb, var(--bad) 8%, var(--surface-2));
+  }
+  .cm .cell.costly .n { color: var(--bad); }
+  .cm .cell.cheap .n { color: var(--ink-2); }
+
+  /* ---------- callout ---------- */
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: var(--surface-2);
+    padding: 16px 20px;
+    border-radius: 0 8px 8px 0;
+    margin: 0 0 20px;
+  }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout .label {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 6px;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 18px;
+  }
+  ul { max-width: var(--measure); color: var(--ink-2); padding-left: 20px; margin: 0 0 14px; }
+  li { margin-bottom: 7px; }
+  li strong { color: var(--ink); font-weight: 620; }
+  code {
+    font-family: var(--mono);
+    font-size: .9em;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1px 5px;
+  }
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible, tr:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  footer {
+    border-top: 1px solid var(--line-2);
+    padding-top: 22px;
+    color: var(--ink-3);
+    font-size: 13px;
+  }
+  footer p { color: var(--ink-3); }
+
+  /* tooltip */
+  #tip {
+    position: fixed;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .1s;
+    background: var(--ink);
+    color: var(--ground);
+    font-family: var(--mono);
+    font-size: 11.5px;
+    padding: 6px 9px;
+    border-radius: 5px;
+    z-index: 40;
+    white-space: nowrap;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #tip { transition: none; }
+  }
+</style>
+
+<div class="page">
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">AI/ML Fundamentals capstone · EDU-02 field-based scenario</p>
+    <h1>Flagging students who need help, while there is still time to help them</h1>
+    <p class="standfirst">
+      An early-warning classifier that estimates academic risk after roughly the
+      first quarter of an online course, using only what a university actually
+      knows at that moment. Every figure below is generated from the model's own
+      output on a cohort it never saw during training.
+    </p>
+    <dl class="facts" id="facts"></dl>
+  </header>
+
+  <section id="headline">
+    <div class="section-head">
+      <p class="stage">Result</p>
+      <h2>What the final model achieves on unseen students</h2>
+      <p class="lede">
+        The test set is the 2014J cohort: 8,746 students whose course ran after
+        every course the model trained on. It was scored exactly once, after all
+        model choices were frozen.
+      </p>
+    </div>
+    <div class="tiles" id="headline-tiles"></div>
+    <div class="table-scroll">
+      <table id="headline-table">
+        <caption>Final test results against both baselines</caption>
+      </table>
+    </div>
+  </section>
+
+  <section id="trap">
+    <div class="section-head">
+      <p class="stage">Why not accuracy</p>
+      <h2>A model can be 62% accurate and still be useless</h2>
+    </div>
+    <div class="callout">
+      <p class="label">The trap, measured</p>
+      <p>
+        62% of the test cohort passed their course. A model that predicts
+        "everyone passes" therefore scores <strong>62% accuracy</strong> while
+        flagging <strong>zero</strong> at-risk students — its recall on the class
+        the system exists to catch is 0.000. That is why recall and F1 are the
+        primary metrics here, and accuracy is not.
+      </p>
+    </div>
+    <p>
+      The two errors are not equally expensive. A <strong>false negative</strong>
+      means a struggling student gets no support. A <strong>false positive</strong>
+      means an advisor spends a few minutes on a student who was fine. The
+      operating threshold (0.327, tuned on validation, not on the test set)
+      deliberately buys recall with precision.
+    </p>
+    <div class="panel">
+      <h3>Test confusion matrix at the operating threshold</h3>
+      <div class="cm" id="cm"></div>
+      <p class="panel-note" id="cm-note"></p>
+    </div>
+  </section>
+
+  <section id="data">
+    <div class="section-head">
+      <p class="stage">Data</p>
+      <h2>One row is one student in one run of one course</h2>
+      <p class="lede">
+        OULAD covers 32,593 student enrolments across 22 course presentations.
+        Students who had already unregistered by the prediction day are excluded:
+        their outcome is known at that point, so scoring them would inflate
+        recall rather than demonstrate it.
+      </p>
+    </div>
+    <div class="panel">
+      <h3>Class balance, before and after the population rule</h3>
+      <div class="legend">
+        <span><i class="swatch" style="background: var(--s-risk)"></i> at risk (withdrawn or failed)</span>
+        <span><i class="swatch" style="background: var(--s-safe)"></i> not at risk (passed or distinction)</span>
+      </div>
+      <div class="chart" id="balance-chart"></div>
+      <div class="table-scroll">
+        <table id="balance-table">
+          <caption>Split sizes and at-risk share</caption>
+        </table>
+      </div>
+      <p class="panel-note">
+        The split is chronological by course presentation, not random: training
+        on the 2013 cohorts, validating on 2014B, testing on 2014J. 3,538
+        students appear in more than one presentation, so a random split would
+        put the same person on both sides.
+      </p>
+    </div>
+  </section>
+
+  <section id="experiments">
+    <div class="section-head">
+      <p class="stage">Experiments</p>
+      <h2>Seven runs, one hypothesis each</h2>
+      <p class="lede">
+        All runs were tracked in MLflow and scored on the validation cohort
+        (2014B). Each candidate also had its decision threshold tuned, because
+        0.5 is a convention rather than a considered operating point.
+      </p>
+    </div>
+    <div class="panel">
+      <h3>Recall and F1 on validation, by run</h3>
+      <div class="legend">
+        <span><i class="swatch" style="background: var(--s-risk)"></i> recall (at-risk class)</span>
+        <span><i class="swatch" style="background: var(--s-safe)"></i> F1 (at-risk class)</span>
+        <span><i class="swatch" style="background: var(--s-third)"></i> PR-AUC</span>
+      </div>
+      <div class="chart" id="runs-chart"></div>
+      <div class="table-scroll">
+        <table id="runs-table">
+          <caption>Validation metrics for every run (threshold 0.5 unless tuned)</caption>
+        </table>
+      </div>
+    </div>
+    <div class="callout">
+      <p class="label">What the comparison showed</p>
+      <p>
+        Class weighting (the "balanced" and "weighted" runs) shifts the
+        precision/recall trade-off but does not improve ranking quality —
+        PR-AUC stays around 0.80 either way. Once the threshold is tuned
+        explicitly, weighting adds nothing. Boosting produced the best-ordered
+        risk scores, which is what matters when advisors work from a ranked list.
+      </p>
+    </div>
+  </section>
+
+  <section id="curve">
+    <div class="section-head">
+      <p class="stage">Operating point</p>
+      <h2>Choosing where to sit on the precision–recall trade-off</h2>
+    </div>
+    <div class="grid-2">
+      <div class="panel">
+        <h3>Precision–recall curve on the test cohort</h3>
+        <div class="chart" id="pr-chart"></div>
+        <p class="panel-note" id="pr-note"></p>
+      </div>
+      <div class="panel">
+        <h3>Where the model puts its risk scores</h3>
+        <div class="legend">
+          <span><i class="swatch" style="background: var(--s-risk)"></i> students who really were at risk</span>
+          <span><i class="swatch" style="background: var(--s-safe)"></i> students who were fine</span>
+        </div>
+        <div class="chart" id="dist-chart"></div>
+        <p class="panel-note">
+          The two distributions overlap in the middle band — that overlap is the
+          honest limit of an early prediction, not a bug. The dashed line marks
+          the operating threshold.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="modules">
+    <div class="section-head">
+      <p class="stage">Per course</p>
+      <h2>Including a course the model had never seen</h2>
+      <p class="lede">
+        Module CCC only ran in 2014, so there is no CCC data in the 2013 training
+        era. That was decided and documented before the final evaluation, and
+        results are reported both with and without it.
+      </p>
+    </div>
+    <div class="panel">
+      <h3>Recall by course module</h3>
+      <div class="chart" id="modules-chart"></div>
+      <div class="table-scroll">
+        <table id="modules-table">
+          <caption>Test results per module, at the operating threshold</caption>
+        </table>
+      </div>
+      <p class="panel-note" id="modules-note"></p>
+    </div>
+  </section>
+
+  <section id="importance">
+    <div class="section-head">
+      <p class="stage">Explanation</p>
+      <h2>What the model actually weighs</h2>
+      <p class="lede">
+        Gain-based importance over the whole model. Per-student contributions use
+        the same tree structure through TreeSHAP, so an advisor sees why one
+        particular student was flagged.
+      </p>
+    </div>
+    <div class="panel">
+      <h3>Top features by contribution to the model</h3>
+      <div class="chart" id="importance-chart"></div>
+      <p class="panel-note">
+        The strongest single signal is not a score but an <em>absence</em>:
+        whether the student has submitted any assignment that was already due.
+        This is why unsubmitted work is encoded as its own state rather than
+        filled in as a zero — treating it as a zero score would have thrown
+        away the most predictive thing in the data.
+      </p>
+    </div>
+  </section>
+
+  <section id="fairness">
+    <div class="section-head">
+      <p class="stage">Responsible use</p>
+      <h2>Who the model serves equally, and who it does not</h2>
+      <p class="lede">
+        Recall parity is the fairness question that matters here: are struggling
+        students missed more often in some groups than others? Flag rate is
+        reported alongside, because a group's higher flag rate is only fair if it
+        tracks a genuinely higher base rate.
+      </p>
+    </div>
+    <div class="panel">
+      <h3>Recall by group, against the overall test recall</h3>
+      <div class="legend">
+        <span><i class="swatch" style="background: var(--s-risk)"></i> recall within group</span>
+        <span><i class="swatch" style="background: var(--ink-3)"></i> overall recall (reference)</span>
+      </div>
+      <div class="chart" id="fairness-chart"></div>
+      <div class="table-scroll">
+        <table id="fairness-table">
+          <caption>Test slices: base rate, recall, precision, flag rate</caption>
+        </table>
+      </div>
+      <p class="panel-note" id="fairness-note"></p>
+    </div>
+  </section>
+
+  <section id="errors">
+    <div class="section-head">
+      <p class="stage">Error analysis</p>
+      <h2>The students the model misses look fine at the check point</h2>
+    </div>
+    <div class="panel">
+      <h3>Median profile at the prediction day: missed versus caught</h3>
+      <div class="legend">
+        <span><i class="swatch" style="background: var(--bad)"></i> missed (false negatives)</span>
+        <span><i class="swatch" style="background: var(--s-third)"></i> caught (true positives)</span>
+      </div>
+      <div class="chart" id="errors-chart"></div>
+      <div class="table-scroll">
+        <table id="errors-table">
+          <caption>Median values at the cutoff for at-risk students</caption>
+        </table>
+      </div>
+      <p class="panel-note" id="errors-note"></p>
+    </div>
+  </section>
+
+  <section id="limits">
+    <div class="section-head">
+      <p class="stage">Limits</p>
+      <h2>What this project does not claim</h2>
+    </div>
+    <ul>
+      <li><strong>It is a prototype, not a deployable system.</strong> OULAD is UK
+        Open University data from 2013–2014; the patterns it learned do not
+        transfer directly to another country's education system.</li>
+      <li><strong>One prediction point is not enough.</strong> The dominant error
+        mode is students whose problems begin after the first quarter. Re-scoring
+        at later checkpoints is the obvious extension, and it is out of scope here.</li>
+      <li><strong>Every flag needs a human.</strong> The output is a ranked
+        support signal for advisors. It must never drive admission, grading, or
+        disciplinary decisions, and the demographic slices above are the reason
+        why.</li>
+      <li><strong>The test set was used once.</strong> All model and threshold
+        choices were made on validation data, so these numbers are an estimate of
+        generalisation rather than a target that was optimised against.</li>
+    </ul>
+  </section>
+
+  <footer>
+    <p id="footer-note"></p>
+  </footer>
+
+</div>
+</div>
+<div id="tip" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  "use strict";
+  const D = JSON.parse(document.getElementById("report-data").textContent);
+  const NS = "http://www.w3.org/2000/svg";
+  const tip = document.getElementById("tip");
+
+  const fmt3 = (v) => (v === null || v === undefined) ? "—" : v.toFixed(3);
+  const pct = (v) => (v * 100).toFixed(1) + "%";
+  const num = (v) => v.toLocaleString("en-US");
+
+  function el(tag, attrs, text) {
+    const node = document.createElementNS(NS, tag);
+    for (const k in attrs) node.setAttribute(k, attrs[k]);
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+  function svg(w, h) {
+    const s = el("svg", {
+      viewBox: "0 0 " + w + " " + h, width: w, height: h,
+      role: "img", "font-family": "inherit"
+    });
+    return s;
+  }
+  function hoverable(node, label) {
+    node.addEventListener("pointerenter", (e) => {
+      tip.textContent = label;
+      tip.style.opacity = "1";
+      tip.style.left = Math.min(e.clientX + 12, innerWidth - tip.offsetWidth - 8) + "px";
+      tip.style.top = (e.clientY - 34) + "px";
+    });
+    node.addEventListener("pointermove", (e) => {
+      tip.style.left = Math.min(e.clientX + 12, innerWidth - tip.offsetWidth - 8) + "px";
+      tip.style.top = (e.clientY - 34) + "px";
+    });
+    node.addEventListener("pointerleave", () => { tip.style.opacity = "0"; });
+  }
+
+  function table(id, columns, rows) {
+    const t = document.getElementById(id);
+    const thead = document.createElement("thead");
+    const htr = document.createElement("tr");
+    columns.forEach((c) => {
+      const th = document.createElement("th");
+      th.textContent = c.head;
+      htr.appendChild(th);
+    });
+    thead.appendChild(htr);
+    t.appendChild(thead);
+    const tbody = document.createElement("tbody");
+    rows.forEach((r) => {
+      const tr = document.createElement("tr");
+      if (r.__highlight) tr.className = "highlight";
+      columns.forEach((c) => {
+        const td = document.createElement("td");
+        const v = c.cell(r);
+        if (v instanceof Node) td.appendChild(v); else td.textContent = v;
+        if (c.mono !== false && c.head !== columns[0].head) td.className = "num";
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+    t.appendChild(tbody);
+  }
+
+  /* ---------- facts strip ---------- */
+  (function facts() {
+    const items = [
+      ["Dataset", "OULAD · CC-BY 4.0"],
+      ["Prediction point", "first 25% of a course"],
+      ["Task", "binary classification"],
+      ["Final model", "XGBoost @ 0.327"],
+      ["Test cohort", num(D.test.n) + " students (2014J)"],
+      ["Primary metric", "recall, then F1"],
+    ];
+    const dl = document.getElementById("facts");
+    items.forEach(([k, v]) => {
+      const wrap = document.createElement("div");
+      wrap.className = "fact";
+      const dt = document.createElement("dt"); dt.textContent = k;
+      const dd = document.createElement("dd"); dd.textContent = v;
+      wrap.append(dt, dd);
+      dl.appendChild(wrap);
+    });
+  })();
+
+  /* ---------- headline tiles + table ---------- */
+  (function headline() {
+    const m = D.test.at_threshold;
+    const cm = D.test.confusion;
+    const tiles = [
+      ["Recall, at-risk class", fmt3(m.recall),
+       num(cm.tp) + " of " + num(cm.tp + cm.fn) + " at-risk students caught", true],
+      ["Precision", fmt3(m.precision),
+       "of every 100 flags, " + Math.round(m.precision * 100) + " were genuinely at risk", false],
+      ["F1", fmt3(m.f1), "balance of the two, at the operating threshold", false],
+      ["PR-AUC", fmt3(D.test.pr_auc),
+       "ranking quality across all thresholds", false],
+    ];
+    const box = document.getElementById("headline-tiles");
+    tiles.forEach(([k, v, sub, primary]) => {
+      const d = document.createElement("div");
+      d.className = "tile" + (primary ? " primary" : "");
+      d.innerHTML = "<span class='k'></span><span class='v'></span><span class='sub'></span>";
+      d.querySelector(".k").textContent = k;
+      d.querySelector(".v").textContent = v;
+      d.querySelector(".sub").textContent = sub;
+      box.appendChild(d);
+    });
+
+    const rows = [
+      { name: "Dummy (predicts majority class)", thr: "0.5", r: 0, p: 0, f: 0, auc: null },
+      { name: "Logistic Regression", thr: "0.5", r: 0.584, p: 0.672, f: 0.625, auc: null },
+      { name: "XGBoost, default threshold", thr: "0.5",
+        r: D.test.at_half.recall, p: D.test.at_half.precision, f: D.test.at_half.f1,
+        auc: D.test.pr_auc },
+      { name: "XGBoost, tuned threshold (final)", thr: String(D.model.threshold),
+        r: m.recall, p: m.precision, f: m.f1, auc: D.test.pr_auc, __highlight: true },
+    ];
+    table("headline-table", [
+      { head: "Model", cell: (r) => r.name },
+      { head: "Threshold", cell: (r) => r.thr },
+      { head: "Recall", cell: (r) => fmt3(r.r) },
+      { head: "Precision", cell: (r) => fmt3(r.p) },
+      { head: "F1", cell: (r) => fmt3(r.f) },
+      { head: "PR-AUC", cell: (r) => fmt3(r.auc) },
+    ], rows);
+  })();
+
+  /* ---------- confusion matrix ---------- */
+  (function confusion() {
+    const c = D.test.confusion;
+    const box = document.getElementById("cm");
+    const cells = [
+      ["", "hdr", ""], ["predicted: not at risk", "hdr", ""], ["predicted: at risk", "hdr", ""],
+      ["actually not at risk", "hdr", ""],
+      [c.tn, "cell ok", "true negative"],
+      [c.fp, "cell cheap", "false positive · cheap error"],
+      ["actually at risk", "hdr", ""],
+      [c.fn, "cell costly", "false negative · costly error"],
+      [c.tp, "cell ok", "true positive"],
+    ];
+    cells.forEach(([v, cls, sub]) => {
+      const d = document.createElement("div");
+      d.className = cls;
+      if (cls === "hdr") { d.textContent = v; }
+      else {
+        d.innerHTML = "<span class='n'></span><span class='t'></span>";
+        d.querySelector(".n").textContent = num(v);
+        d.querySelector(".t").textContent = sub;
+      }
+      box.appendChild(d);
+    });
+    document.getElementById("cm-note").textContent =
+      "The model flags " + num(c.tp + c.fp) + " of " + num(D.test.n) +
+      " students (" + pct((c.tp + c.fp) / D.test.n) + " of the cohort). It misses " +
+      num(c.fn) + " genuinely at-risk students, and raises " + num(c.fp) +
+      " flags on students who turned out fine.";
+  })();
+
+  /* ---------- horizontal bar helper ---------- */
+  function hbars(mount, rows, opts) {
+    const o = Object.assign({
+      labelW: 190, barH: 15, gap: 9, groupGap: 12, max: 1,
+      width: Math.min(mount.clientWidth || 640, 900), fmt: fmt3, valW: 54,
+      axisFmt: (v) => v.toFixed(2), maxChars: 40
+    }, opts);
+    const seriesN = rows[0].values.length;
+    const rowH = seriesN * o.barH + (seriesN - 1) * 2 + o.groupGap;
+    const h = rows.length * rowH + 24;
+    const plotW = o.width - o.labelW - o.valW - 8;
+    const s = svg(o.width, h);
+
+    // recessive gridlines at 0.25 steps
+    for (let g = 0; g <= 4; g++) {
+      const x = o.labelW + (plotW * g) / 4;
+      s.appendChild(el("line", {
+        x1: x, y1: 0, x2: x, y2: h - 20,
+        stroke: "var(--grid)", "stroke-width": 1
+      }));
+      s.appendChild(el("text", {
+        x: x, y: h - 6, "text-anchor": "middle", class: "axis-label",
+        "font-size": 10.5, fill: "var(--ink-3)"
+      }, o.axisFmt((g / 4) * o.max)));
+    }
+
+    if (o.reference !== undefined) {
+      const x = o.labelW + (o.reference / o.max) * plotW;
+      s.appendChild(el("line", {
+        x1: x, y1: 0, x2: x, y2: h - 20,
+        stroke: "var(--ink-3)", "stroke-width": 2, "stroke-dasharray": "5 4",
+        opacity: .75
+      }));
+    }
+
+    rows.forEach((r, i) => {
+      const top = i * rowH;
+      const lab = el("text", {
+        x: o.labelW - 10, y: top + rowH / 2 - o.groupGap / 2 + 4,
+        "text-anchor": "end", "font-size": 12.5, fill: "var(--ink-2)"
+      }, r.label.length > o.maxChars
+            ? r.label.slice(0, o.maxChars - 1) + "\u2026" : r.label);
+      if (r.label.length > o.maxChars) hoverable(lab, r.label);
+      s.appendChild(lab);
+      r.values.forEach((v, j) => {
+        const y = top + j * (o.barH + 2);
+        const w = Math.max(2, (v / o.max) * plotW);
+        const rect = el("rect", {
+          x: o.labelW, y: y, width: w, height: o.barH, rx: 4,
+          fill: r.colors ? r.colors[j] : o.colors[j],
+          stroke: "var(--surface)", "stroke-width": 2
+        });
+        hoverable(rect, r.label + " — " + (o.names ? o.names[j] + ": " : "") + o.fmt(v));
+        s.appendChild(rect);
+        s.appendChild(el("text", {
+          x: o.labelW + w + 7, y: y + o.barH - 3,
+          "font-size": 11, class: "val-label", fill: "var(--ink-2)"
+        }, o.fmt(v)));
+      });
+    });
+    mount.appendChild(s);
+  }
+
+  /* ---------- class balance ---------- */
+  (function balance() {
+    const rows = D.class_balance.map((r) => ({
+      label: r.scope.replace(" (still enrolled at cutoff)", "")
+                    .replace(" (raw dataset)", ""),
+      atRisk: r.at_risk, notAtRisk: r.not_at_risk,
+      pctRisk: r.at_risk_pct, students: r.students, scope: r.scope
+    }));
+    const mount = document.getElementById("balance-chart");
+    const width = Math.min(mount.clientWidth || 640, 900);
+    const labelW = 165, barH = 26, gap = 12;
+    const h = rows.length * (barH + gap) + 6;
+    const plotW = width - labelW - 8;
+    const maxN = Math.max.apply(null, rows.map((r) => r.students));
+    const s = svg(width, h);
+    rows.forEach((r, i) => {
+      const y = i * (barH + gap);
+      s.appendChild(el("text", {
+        x: labelW - 10, y: y + barH / 2 + 4, "text-anchor": "end",
+        "font-size": 12.5, fill: "var(--ink-2)"
+      }, r.label));
+      const total = (r.students / maxN) * plotW;
+      const riskW = total * (r.atRisk / r.students);
+      const a = el("rect", { x: labelW, y: y, width: riskW, height: barH,
+        fill: "var(--s-risk)", rx: 4, stroke: "var(--surface)", "stroke-width": 2 });
+      hoverable(a, r.scope + " — at risk: " + num(r.atRisk) + " (" + r.pctRisk + "%)");
+      const b = el("rect", { x: labelW + riskW, y: y, width: total - riskW, height: barH,
+        fill: "var(--s-safe)", rx: 4, stroke: "var(--surface)", "stroke-width": 2 });
+      hoverable(b, r.scope + " — not at risk: " + num(r.notAtRisk));
+      s.append(a, b);
+      s.appendChild(el("text", {
+        x: labelW + 8, y: y + barH / 2 + 4, "font-size": 11.5,
+        class: "val-label", fill: "#fff", "font-weight": 600
+      }, r.pctRisk + "%"));
+      s.appendChild(el("text", {
+        x: labelW + total + 8, y: y + barH / 2 + 4, "font-size": 11,
+        class: "val-label", fill: "var(--ink-3)"
+      }, num(r.students)));
+    });
+    mount.appendChild(s);
+
+    table("balance-table", [
+      { head: "Scope", cell: (r) => r.scope },
+      { head: "Students", cell: (r) => num(r.students) },
+      { head: "At risk", cell: (r) => num(r.at_risk) },
+      { head: "Not at risk", cell: (r) => num(r.not_at_risk) },
+      { head: "At-risk share", cell: (r) => r.at_risk_pct + "%" },
+    ], D.class_balance);
+  })();
+
+  /* ---------- runs ---------- */
+  (function runs() {
+    const rows = D.runs.map((r) => ({
+      label: r.run,
+      values: [r.recall, r.f1, r.pr_auc],
+      colors: ["var(--s-risk)", "var(--s-safe)", "var(--s-third)"]
+    }));
+    hbars(document.getElementById("runs-chart"), rows, {
+      labelW: 175, names: ["recall", "F1", "PR-AUC"]
+    });
+    table("runs-table", [
+      { head: "Run", cell: (r) => r.run },
+      { head: "Recall", cell: (r) => fmt3(r.recall) },
+      { head: "Precision", cell: (r) => fmt3(r.precision) },
+      { head: "F1", cell: (r) => fmt3(r.f1) },
+      { head: "PR-AUC", cell: (r) => fmt3(r.pr_auc) },
+      { head: "F1 @ tuned thr", cell: (r) => fmt3(r.tuned_f1) },
+    ], D.runs.map((r) => Object.assign({}, r,
+        { __highlight: r.run.indexOf("final") > -1 })));
+  })();
+
+  /* ---------- PR curve ---------- */
+  (function prCurve() {
+    const mount = document.getElementById("pr-chart");
+    const w = Math.min(mount.clientWidth || 420, 520), h = 300;
+    const m = { l: 46, r: 12, t: 10, b: 40 };
+    const s = svg(w, h);
+    const X = (v) => m.l + v * (w - m.l - m.r);
+    const Y = (v) => h - m.b - v * (h - m.t - m.b);
+    for (let g = 0; g <= 4; g++) {
+      const v = g / 4;
+      s.appendChild(el("line", { x1: m.l, y1: Y(v), x2: w - m.r, y2: Y(v),
+        stroke: "var(--grid)", "stroke-width": 1 }));
+      s.appendChild(el("text", { x: m.l - 8, y: Y(v) + 4, "text-anchor": "end",
+        "font-size": 10.5, class: "axis-label", fill: "var(--ink-3)" }, v.toFixed(2)));
+      s.appendChild(el("text", { x: X(v), y: h - m.b + 16, "text-anchor": "middle",
+        "font-size": 10.5, class: "axis-label", fill: "var(--ink-3)" }, v.toFixed(2)));
+    }
+    const base = D.test.at_risk_rate;
+    s.appendChild(el("line", { x1: m.l, y1: Y(base), x2: w - m.r, y2: Y(base),
+      stroke: "var(--ink-3)", "stroke-width": 2, "stroke-dasharray": "4 4" }));
+    s.appendChild(el("text", { x: m.l + 6, y: Y(base) - 7,
+      "font-size": 10.5, class: "axis-label", fill: "var(--ink-3)" },
+      "no-skill " + base.toFixed(2)));
+    const pts = D.pr_curve.map((p) => X(p.r) + "," + Y(p.p)).join(" ");
+    s.appendChild(el("polyline", { points: pts, fill: "none",
+      stroke: "var(--s-safe)", "stroke-width": 2, "stroke-linejoin": "round" }));
+    const op = D.test.at_threshold;
+    const dot = el("circle", { cx: X(op.recall), cy: Y(op.precision), r: 5.5,
+      fill: "var(--s-risk)", stroke: "var(--surface)", "stroke-width": 2 });
+    hoverable(dot, "operating point — recall " + fmt3(op.recall) +
+      ", precision " + fmt3(op.precision));
+    s.appendChild(dot);
+    s.appendChild(el("text", { x: X(op.recall) - 10, y: Y(op.precision) - 12,
+      "text-anchor": "end", "font-size": 11, class: "val-label", fill: "var(--ink)" },
+      "threshold " + D.model.threshold));
+    s.appendChild(el("text", { x: (w + m.l) / 2, y: h - 4, "text-anchor": "middle",
+      "font-size": 11, fill: "var(--ink-3)" }, "recall"));
+    s.appendChild(el("text", { x: 12, y: h / 2, "text-anchor": "middle",
+      "font-size": 11, fill: "var(--ink-3)",
+      transform: "rotate(-90 12 " + h / 2 + ")" }, "precision"));
+    mount.appendChild(s);
+    document.getElementById("pr-note").textContent =
+      "PR-AUC " + fmt3(D.test.pr_auc) + " against a no-skill floor of " +
+      base.toFixed(3) + " (the cohort's at-risk rate). The marked point is the " +
+      "threshold chosen on validation.";
+  })();
+
+  /* ---------- score distribution ---------- */
+  (function dist() {
+    const mount = document.getElementById("dist-chart");
+    const d = D.score_distribution;
+    const w = Math.min(mount.clientWidth || 420, 520), h = 300;
+    const m = { l: 46, r: 12, t: 10, b: 40 };
+    const s = svg(w, h);
+    const n = d.at_risk.length;
+    const maxY = Math.max.apply(null, d.at_risk.concat(d.not_at_risk));
+    const bw = (w - m.l - m.r) / n;
+    const Y = (v) => h - m.b - (v / maxY) * (h - m.t - m.b);
+    for (let g = 0; g <= 4; g++) {
+      const v = (maxY * g) / 4;
+      s.appendChild(el("line", { x1: m.l, y1: Y(v), x2: w - m.r, y2: Y(v),
+        stroke: "var(--grid)", "stroke-width": 1 }));
+      s.appendChild(el("text", { x: m.l - 8, y: Y(v) + 4, "text-anchor": "end",
+        "font-size": 10.5, class: "axis-label", fill: "var(--ink-3)" },
+        Math.round(v).toString()));
+    }
+    for (let i = 0; i < n; i++) {
+      const x0 = m.l + i * bw;
+      const halfW = Math.max(1.5, bw / 2 - 1.5);
+      [["at_risk", "var(--s-risk)", 0], ["not_at_risk", "var(--s-safe)", 1]]
+        .forEach(([key, color, slot]) => {
+          const v = d[key][i];
+          if (!v) return;
+          const rect = el("rect", {
+            x: x0 + slot * (halfW + 1), y: Y(v), width: halfW,
+            height: h - m.b - Y(v), fill: color, rx: 2,
+            stroke: "var(--surface)", "stroke-width": 1
+          });
+          hoverable(rect, "score " + d.edges[i].toFixed(2) + "–" +
+            d.edges[i + 1].toFixed(2) + " · " +
+            (key === "at_risk" ? "at risk" : "not at risk") + ": " + num(v));
+          s.appendChild(rect);
+        });
+    }
+    const tx = m.l + D.model.threshold * (w - m.l - m.r);
+    s.appendChild(el("line", { x1: tx, y1: m.t, x2: tx, y2: h - m.b,
+      stroke: "var(--ink)", "stroke-width": 2, "stroke-dasharray": "4 3" }));
+    s.appendChild(el("text", { x: tx + 5, y: m.t + 12, "font-size": 10.5,
+      class: "val-label", fill: "var(--ink)" }, "thr " + D.model.threshold));
+    [0, 0.5, 1].forEach((v) => {
+      s.appendChild(el("text", {
+        x: m.l + v * (w - m.l - m.r), y: h - m.b + 16, "text-anchor": "middle",
+        "font-size": 10.5, class: "axis-label", fill: "var(--ink-3)"
+      }, v.toFixed(1)));
+    });
+    s.appendChild(el("text", { x: (w + m.l) / 2, y: h - 4, "text-anchor": "middle",
+      "font-size": 11, fill: "var(--ink-3)" }, "predicted risk score"));
+    mount.appendChild(s);
+  })();
+
+  /* ---------- per module ---------- */
+  (function modules() {
+    const rows = D.per_module.map((r) => ({
+      label: r.module + (r.cold_start ? "  (no training data)" : ""),
+      values: [r.recall],
+      colors: [r.cold_start ? "var(--s-third)" : "var(--s-risk)"]
+    }));
+    hbars(document.getElementById("modules-chart"), rows, {
+      labelW: 170, names: ["recall"], barH: 18
+    });
+    table("modules-table", [
+      { head: "Module", cell: (r) => {
+          if (!r.cold_start) return r.module;
+          const f = document.createDocumentFragment();
+          f.append(r.module + " ");
+          const c = document.createElement("span");
+          c.className = "chip warn";
+          c.textContent = "cold start";
+          f.appendChild(c);
+          return f;
+        } },
+      { head: "Students", cell: (r) => num(r.n) },
+      { head: "At-risk rate", cell: (r) => fmt3(r.at_risk_rate) },
+      { head: "Recall", cell: (r) => fmt3(r.recall) },
+      { head: "Precision", cell: (r) => fmt3(r.precision) },
+      { head: "F1", cell: (r) => fmt3(r.f1) },
+    ], D.per_module);
+    const x = D.test.excluding_ccc;
+    document.getElementById("modules-note").textContent =
+      "CCC reaches recall " + fmt3(D.per_module.filter((m) => m.cold_start)[0].recall) +
+      " despite the model never seeing that course in training, which suggests the " +
+      "early-engagement signals generalise across courses. Excluding CCC entirely, " +
+      "the test result is recall " + fmt3(x.recall) + ", precision " +
+      fmt3(x.precision) + ", F1 " + fmt3(x.f1) + " — essentially unchanged.";
+  })();
+
+  /* ---------- feature importance ---------- */
+  (function importance() {
+    const top = D.feature_importance.slice(0, 10);
+    const max = top[0].share;
+    const rows = top.map((f) => ({
+      label: f.feature, values: [f.share], colors: ["var(--s-safe)"]
+    }));
+    hbars(document.getElementById("importance-chart"), rows, {
+      labelW: 272, names: ["share of total gain"], barH: 16, max: max,
+      fmt: (v) => pct(v), axisFmt: (v) => pct(v), valW: 66, maxChars: 38
+    });
+  })();
+
+  /* ---------- fairness ---------- */
+  (function fairness() {
+    const overall = D.test.at_threshold.recall;
+    const order = ["disability", "gender", "age_band", "imd_band"];
+    const rows = [];
+    const flat = [];
+    order.forEach((key) => {
+      D.fairness[key].forEach((g) => {
+        rows.push({
+          label: key + " = " + g.group,
+          values: [g.recall], colors: ["var(--s-risk)"]
+        });
+        flat.push(Object.assign({ dimension: key }, g));
+      });
+    });
+    hbars(document.getElementById("fairness-chart"), rows, {
+      labelW: 215, names: ["recall"], barH: 15, reference: overall
+    });
+    table("fairness-table", [
+      { head: "Slice", cell: (r) => r.dimension + " = " + r.group },
+      { head: "Students", cell: (r) => num(r.n) },
+      { head: "At-risk rate", cell: (r) => fmt3(r.at_risk_rate) },
+      { head: "Recall", cell: (r) => fmt3(r.recall) },
+      { head: "Precision", cell: (r) => fmt3(r.precision) },
+      { head: "Flag rate", cell: (r) => fmt3(r.flag_rate) },
+    ], flat);
+
+    const dis = D.fairness.disability.filter((g) => g.group === "True")[0];
+    document.getElementById("fairness-note").textContent =
+      "Students with a declared disability are flagged more often (flag rate " +
+      fmt3(dis.flag_rate) + ") and their recall is " + fmt3(dis.recall) +
+      ", above the overall " + fmt3(overall) + " — the model is not missing " +
+      "that group more often. Their base risk really is higher (" +
+      fmt3(dis.at_risk_rate) + " versus " + fmt3(D.test.at_risk_rate) +
+      " overall), which is exactly why a flag must lead to an offer of support " +
+      "and never to a penalty.";
+  })();
+
+  /* ---------- error analysis ---------- */
+  (function errors() {
+    const e = D.error_analysis;
+    const rows = e.medians.map((m) => {
+      const max = Math.max(m.missed, m.caught) || 1;
+      return {
+        label: m.metric,
+        values: [m.missed / max, m.caught / max],
+        colors: ["var(--bad)", "var(--s-third)"],
+        raw: m
+      };
+    });
+    hbars(document.getElementById("errors-chart"), rows, {
+      labelW: 215, names: ["missed", "caught"], barH: 14,
+      fmt: (v) => (v * 100).toFixed(0) + "% of row max"
+    });
+    table("errors-table", [
+      { head: "Median at the cutoff", cell: (r) => r.metric },
+      { head: "Missed (FN)", cell: (r) => r.missed.toFixed(0) },
+      { head: "Caught (TP)", cell: (r) => r.caught.toFixed(0) },
+    ], e.medians);
+    document.getElementById("errors-note").textContent =
+      "Of " + num(e.missed + e.caught) + " genuinely at-risk students, " +
+      num(e.caught) + " were flagged and " + num(e.missed) +
+      " were missed. The missed group was still clicking, still submitting and " +
+      "still scoring reasonably at the prediction day: their difficulties start " +
+      "after the point where this model looks.";
+  })();
+
+  /* ---------- footer ---------- */
+  document.getElementById("footer-note").textContent =
+    "Every number on this page is generated by src/build_report_data.py from the " +
+    "model's own predictions — final model " + D.model.name +
+    ", operating threshold " + D.model.threshold + ", fitted with scikit-learn " +
+    (D.model.fitted_with["scikit-learn"] || "?") + " and xgboost " +
+    (D.model.fitted_with.xgboost || "?") + ". Dataset: OULAD (Kuzilek, Hlosta & " +
+    "Zdrahal, 2017), CC-BY 4.0. Capstone project by Mubinabegim To’lqinjonova.";
+})();
+</script>

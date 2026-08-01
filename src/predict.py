@@ -136,6 +136,72 @@ def _signals(student: dict) -> list[str]:
     return out or ["no obvious warning signals - risk driven by weaker patterns"]
 
 
+READABLE_NAMES = {
+    "early_total_clicks": "clicks in the early window",
+    "early_active_days": "days active in the early window",
+    "early_clicks_per_active_day": "clicks per active day",
+    "days_since_last_activity": "days since last activity",
+    "early_tma_due_count": "assignments already due",
+    "early_tma_submitted_count": "assignments submitted",
+    "early_tma_any_submitted": "submitted at least one assignment",
+    "early_tma_mean_score": "average early assignment score",
+    "date_registration": "how early the student registered",
+    "num_of_prev_attempts": "previous attempts at this course",
+    "studied_credits": "credits being studied",
+}
+
+
+def _readable(feature: str) -> str:
+    """Turn a pipeline feature name into something an advisor can read."""
+    name = feature.split("__", 1)[-1]          # drop the 'num__'/'cat__' prefix
+    if name.startswith("missingindicator_"):   # imputer indicator columns
+        base = name[len("missingindicator_"):]
+        # the score indicator is really "nothing submitted yet" - say that
+        if base == "early_tma_mean_score":
+            return "no assignment submitted yet"
+        return f"{READABLE_NAMES.get(base, base)} (not recorded)"
+    if name in READABLE_NAMES:
+        return READABLE_NAMES[name]
+    # one-hot columns look like 'imd_band_20-30%' -> 'imd_band = 20-30%'
+    for column in ("code_module", "gender", "region", "highest_education",
+                   "imd_band", "age_band", "disability"):
+        if name.startswith(column + "_"):
+            return f"{column} = {name[len(column) + 1:]}"
+    return name
+
+
+def top_factors(row_df, model, k: int = 3) -> list[dict]:
+    """Per-student contributing factors from the model itself.
+
+    Uses XGBoost's built-in TreeSHAP (`pred_contribs=True`), so these are the
+    model's actual contributions for this one student, not a global ranking
+    and not hand-written rules. Positive values push the risk up.
+    """
+    import xgboost as xgb
+
+    preprocess = model.named_steps["preprocess"]
+    booster = model.named_steps["model"].get_booster()
+
+    matrix = preprocess.transform(row_df)
+    if hasattr(matrix, "toarray"):
+        matrix = matrix.toarray()
+    names = list(preprocess.get_feature_names_out())
+
+    # last column of the SHAP output is the base value, not a feature
+    contributions = booster.predict(xgb.DMatrix(matrix), pred_contribs=True)[0][:-1]
+
+    order = sorted(range(len(contributions)),
+                   key=lambda i: abs(contributions[i]), reverse=True)
+    factors = []
+    for i in order[:k]:
+        factors.append({
+            "factor": _readable(names[i]),
+            "direction": "increases risk" if contributions[i] > 0 else "lowers risk",
+            "contribution": round(float(contributions[i]), 3),
+        })
+    return factors
+
+
 def predict_risk(student: dict, model=None, meta=None) -> dict:
     """Validate the input and return the risk assessment for one student."""
     errors = validate_input(student)
@@ -156,7 +222,8 @@ def predict_risk(student: dict, model=None, meta=None) -> dict:
             float(row["early_tma_submitted_count"]) > 0
         )
 
-    proba = float(model.predict_proba(pd.DataFrame([row]))[:, 1][0])
+    row_df = pd.DataFrame([row])
+    proba = float(model.predict_proba(row_df)[:, 1][0])
     threshold = meta["threshold"]
     band = "High" if proba >= 0.6 else ("Medium" if proba >= threshold else "Low")
     return {
@@ -164,6 +231,9 @@ def predict_risk(student: dict, model=None, meta=None) -> dict:
         "risk_band": band,
         "flagged_for_advisor": proba >= threshold,
         "decision_threshold": round(threshold, 3),
+        # what the model itself weighted for this student (TreeSHAP)
+        "top_factors": top_factors(row_df, model, k=3),
+        # plain-language observations from the raw input, for the advisor
         "signals": _signals(student),
         "note": "Decision-support only: an advisor must review every flag.",
     }

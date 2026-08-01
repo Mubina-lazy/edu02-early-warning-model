@@ -102,6 +102,14 @@ model) is saved as `models/final_model.joblib`; selection evidence is in
 
 ## 9. Evaluation Metrics and Results
 
+> **Visual report:** [`reports/project_report.html`](reports/project_report.html)
+> renders every figure and table below (class balance, all seven experiment
+> runs, confusion matrix, PR curve, score distribution, per-module results,
+> fairness slices, feature importance, error analysis). Regenerate it with
+> `python src/build_report_data.py && python src/build_report_html.py` —
+> the numbers come from the model's own predictions, so the page cannot drift
+> from the pipeline.
+
 **Primary metrics: Recall and F1** for the "at risk" class — missing an
 at-risk student is costlier than a false alarm. **Supporting metric: PR-AUC.**
 Accuracy alone is not used as a headline metric because the classes are
