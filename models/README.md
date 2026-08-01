@@ -30,5 +30,5 @@ result = predict_risk(one_student_dict, model, meta)
 ```
 
 See `demo.ipynb` for full worked examples, the input schema, and validation
-behavior. The model is decision support for academic advisors only — never
+behavior. The model is decision support for academic advisors only - never
 an automatic decision system.

@@ -23,9 +23,9 @@ Confusion matrix, Logistic Regression (validation):
   alone is meaningless for this task.
 - Logistic Regression on early-window features alone already catches **56.5%**
   of at-risk students with high precision (82.1%): when it flags a student,
-  it is usually right. The whole pipeline (features → preprocessing → model
-  → honest evaluation) works.
-- The main cost right now is the **1,229 false negatives** — at-risk students
+  it is usually right. The whole pipeline (features -> preprocessing -> model
+  -> honest evaluation) works.
+- The main cost right now is the **1,229 false negatives** - at-risk students
   the model misses. For an early-warning system this is the expensive error,
   so the next experiments target recall: class weighting, decision-threshold
   tuning, and stronger models (Random Forest, XGBoost) per the approved brief.

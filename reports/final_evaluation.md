@@ -6,8 +6,8 @@ Model: **E4_xgboost** (see `reports/experiments_results.md`); operating threshol
 
 | Model | Threshold | Recall (at-risk) | Precision | F1 | PR-AUC |
 |---|---|---|---|---|---|
-| Dummy (majority) | 0.5 | 0.000 | 0.000 | 0.000 | — |
-| Logistic Regression | 0.5 | 0.584 | 0.672 | 0.625 | — |
+| Dummy (majority) | 0.5 | 0.000 | 0.000 | 0.000 | - |
+| Logistic Regression | 0.5 | 0.584 | 0.672 | 0.625 | - |
 | **XGBoost (final)** | 0.5 | 0.624 | 0.654 | 0.638 | 0.714 |
 | **XGBoost (final)** | **0.327** | **0.760** | **0.583** | **0.660** | 0.714 |
 
