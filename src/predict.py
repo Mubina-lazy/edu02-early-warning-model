@@ -12,10 +12,12 @@ Used by demo.ipynb; can also be imported by an API later.
 """
 
 import json
+import warnings
 from pathlib import Path
 
 import joblib
 import pandas as pd
+from sklearn.exceptions import InconsistentVersionWarning
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -66,24 +68,32 @@ def check_versions(meta: dict) -> list[str]:
 def load_model(strict: bool = False):
     """Load the final pipeline and its metadata.
 
-    strict=True raises on a version mismatch; the default only warns, so a
-    demo still runs in an environment with slightly different libraries.
+    The version check runs *before* unpickling, so a mismatch is reported
+    once in plain language instead of as one scikit-learn warning per step
+    of the pipeline. strict=True refuses to load on a mismatch; the default
+    loads anyway, so a demo still works in a slightly different environment.
     """
-    model = joblib.load(ROOT / "models" / "final_model.joblib")
     meta = json.loads((ROOT / "models" / "final_model_meta.json").read_text())
-
     mismatches = check_versions(meta)
+
     if mismatches:
         message = (
-            "Library versions differ from the ones that fitted the model:\n  "
+            "the environment differs from the one that fitted the model:\n  "
             + "\n  ".join(mismatches)
-            + "\nInstall the pinned versions to reproduce the documented "
-              "results:\n  pip install -r requirements-demo.txt\n"
-              "(in Colab, restart the runtime after installing)"
+            + "\n  Predictions may differ from the documented results. To "
+              "reproduce them exactly:\n"
+              "    pip install -r requirements-demo.txt\n"
+              "  then restart the runtime (in Colab: Runtime > Restart session)."
         )
         if strict:
             raise RuntimeError(message)
         print("WARNING: " + message)
+
+    with warnings.catch_warnings():
+        # We already reported the version gap above in one readable message;
+        # scikit-learn would otherwise repeat it once per pipeline step.
+        warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
+        model = joblib.load(ROOT / "models" / "final_model.joblib")
     return model, meta
 
 
