@@ -1,6 +1,11 @@
 {
   "run_name": "E4_xgboost",
   "threshold": 0.3269398510456085,
+  "fitted_with": {
+    "scikit-learn": "1.9.0",
+    "xgboost": "3.2.0",
+    "pandas": "2.3.3"
+  },
   "validation_metrics": {
     "recall_at_risk": 0.6983734087694484,
     "precision_at_risk": 0.7163583605368153,

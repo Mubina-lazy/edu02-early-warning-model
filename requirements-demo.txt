@@ -1,0 +1,13 @@
+# Minimal environment for the demo / inference path (demo.ipynb, src/predict.py).
+# Deliberately excludes mlflow, pyreadr, matplotlib and jupyter: the demo only
+# loads the saved pipeline and scores one student, so it installs in seconds
+# and cannot hit the dependency conflicts a full training environment can.
+#
+# scikit-learn and xgboost are pinned to the versions that produced
+# models/final_model.joblib, so the artifact loads cleanly and returns the
+# documented predictions.
+pandas>=2.2,<3
+numpy>=1.26,<3
+scikit-learn==1.9.0
+xgboost==3.2.0
+joblib>=1.3

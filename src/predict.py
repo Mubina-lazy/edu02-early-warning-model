@@ -43,9 +43,47 @@ INPUT_SCHEMA = {
 VALID_MODULES = {"AAA", "BBB", "CCC", "DDD", "EEE", "FFF", "GGG"}
 
 
-def load_model():
+def check_versions(meta: dict) -> list[str]:
+    """Warn if the environment differs from the one that fitted the model.
+
+    A pickled scikit-learn pipeline is only guaranteed to reproduce its
+    predictions under the version it was fitted with, so we surface a clear
+    message instead of scoring silently on a mismatched library.
+    """
+    import sklearn
+    import xgboost
+
+    installed = {"scikit-learn": sklearn.__version__,
+                 "xgboost": xgboost.__version__}
+    expected = meta.get("fitted_with", {})
+    return [
+        f"{pkg}: installed {installed[pkg]}, model fitted with {expected[pkg]}"
+        for pkg in installed
+        if pkg in expected and installed[pkg] != expected[pkg]
+    ]
+
+
+def load_model(strict: bool = False):
+    """Load the final pipeline and its metadata.
+
+    strict=True raises on a version mismatch; the default only warns, so a
+    demo still runs in an environment with slightly different libraries.
+    """
     model = joblib.load(ROOT / "models" / "final_model.joblib")
     meta = json.loads((ROOT / "models" / "final_model_meta.json").read_text())
+
+    mismatches = check_versions(meta)
+    if mismatches:
+        message = (
+            "Library versions differ from the ones that fitted the model:\n  "
+            + "\n  ".join(mismatches)
+            + "\nInstall the pinned versions to reproduce the documented "
+              "results:\n  pip install -r requirements-demo.txt\n"
+              "(in Colab, restart the runtime after installing)"
+        )
+        if strict:
+            raise RuntimeError(message)
+        print("WARNING: " + message)
     return model, meta
 
 

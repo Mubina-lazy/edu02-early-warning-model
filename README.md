@@ -124,13 +124,27 @@ than the prediction point, an honest limitation of a single early check.
 
 ## 10. Installation Instructions
 
+Two dependency sets are provided, so running the demo does not require the
+full training stack:
+
 ```bash
-git clone <this-repository-url>
-cd <repository-folder>
+git clone https://github.com/Mubina-lazy/edu02-early-warning-model.git
+cd edu02-early-warning-model
 python -m venv .venv && source .venv/bin/activate   # optional but recommended
+
+# A) demo / inference only (pandas, scikit-learn, xgboost, joblib)
+pip install -r requirements-demo.txt
+
+# B) full reproduction: audit, training, MLflow experiment tracking
 pip install -r requirements.txt
 python src/download_data.py    # downloads OULAD (~430 MB unzipped) into data/raw/
 ```
+
+`scikit-learn` and `xgboost` are pinned to the versions that fitted
+`models/final_model.joblib`; those versions are recorded in
+`models/final_model_meta.json`, and `src/predict.py` warns if the environment
+differs. `pandas` is capped below 3 because MLflow requires it; the pipeline
+was verified to produce identical metrics on pandas 2.3 and 3.0.
 
 ## 11. Training / Fine-Tuning Instructions
 

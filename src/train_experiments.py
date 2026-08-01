@@ -127,9 +127,22 @@ def main() -> None:
 
     MODELS_DIR.mkdir(exist_ok=True)
     joblib.dump(fitted[winner], MODELS_DIR / "final_model.joblib")
+    # Record the library versions that produced the artifact. Loading a
+    # pickled sklearn pipeline with a different scikit-learn raises
+    # InconsistentVersionWarning, so predict.py compares against these and
+    # tells the user what to install instead of silently scoring.
+    import sklearn
+    import xgboost
+    import pandas
+
     meta = {
         "run_name": winner,
         "threshold": results[winner]["best_f1_threshold"],
+        "fitted_with": {
+            "scikit-learn": sklearn.__version__,
+            "xgboost": xgboost.__version__,
+            "pandas": pandas.__version__,
+        },
         # numpy scalars (e.g. confusion-matrix counts) are not JSON
         # serializable - cast everything to plain Python floats
         "validation_metrics": {k: float(v) for k, v in results[winner].items()},

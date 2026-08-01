@@ -1,13 +1,22 @@
-# Data Gate stage dependencies (tested with Python 3.11).
-# Model-stage packages: mlflow added at Model Gate; xgboost comes with the experiments.
-pandas==3.0.5
-matplotlib==3.11.1
+# Full environment: data download, audit, training, experiment tracking.
+# For the demo/inference path only, use requirements-demo.txt (much smaller).
+#
+# scikit-learn and xgboost are pinned exactly because models/final_model.joblib
+# was fitted with these versions; loading the artifact with a different
+# scikit-learn raises InconsistentVersionWarning and is not guaranteed to
+# reproduce the documented predictions.
+# pandas is capped below 3 because mlflow requires pandas<3. The pipeline was
+# verified to produce identical results on pandas 2.3 and 3.0.
+pandas>=2.2,<3
+numpy>=1.26,<3
 scikit-learn==1.9.0
-requests==2.33.1
-jupyter
-# Needed for the mirror download path (converts the authors' R .rda files
-# back to CSV): python src/download_data.py --source mirror
-pyreadr==0.5.6
-mlflow==3.14.0
 xgboost==3.2.0
-joblib==1.5.3
+joblib>=1.3
+matplotlib>=3.8
+requests>=2.31
+mlflow>=3.0,<4
+# Only needed for the mirror download path:
+#   python src/download_data.py --source mirror
+pyreadr>=0.5.4
+# Only needed to run the audit notebook locally (Colab already provides it):
+jupyter>=1.0
