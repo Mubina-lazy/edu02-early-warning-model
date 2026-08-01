@@ -39,6 +39,14 @@ Complete — ready for submission preparation and defense rehearsal
 - **Verification pass**: pipeline re-run end-to-end — deterministic outputs,
   zero row overlap between splits, no banned columns, docs consistent with
   the data.
+- **Clean-runtime reproduction test (passed)**: `demo.ipynb` opened from
+  GitHub in a fresh Google Colab runtime and run top to bottom. It reproduced
+  the documented predictions exactly — 0.889 (High) for the disengaged
+  student, 0.122 (Low) for the engaged one, 0.964 (High) for the
+  zero-activity edge case — and rejected all five invalid inputs with clear
+  messages. Two defects this test surfaced were fixed: an unsatisfiable
+  `requirements.txt` (mlflow requires pandas<3) and a setup cell that
+  silently reused a stale clone.
 
 ## Current task
 
