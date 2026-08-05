@@ -1,0 +1,53 @@
+{
+  "input": {
+    "code_module": "AAA",
+    "gender": "F",
+    "region": "East Anglian Region",
+    "highest_education": "A Level or Equivalent",
+    "imd_band": "70-80%",
+    "age_band": "0-35",
+    "disability": "False",
+    "early_total_clicks": 3,
+    "early_active_days": 1,
+    "days_since_last_activity": 57,
+    "early_tma_due_count": 2,
+    "early_tma_submitted_count": 0,
+    "early_tma_mean_score": null,
+    "date_registration": -144,
+    "num_of_prev_attempts": 1,
+    "studied_credits": 60
+  },
+  "input_note": "a real student from the unseen 2014J cohort, described only by what was known at the prediction point",
+  "result": {
+    "risk_probability": 0.889,
+    "risk_band": "High",
+    "flagged_for_advisor": true,
+    "decision_threshold": 0.327,
+    "top_factors": [
+      {
+        "factor": "days since last activity",
+        "direction": "increases risk",
+        "contribution": 1.57
+      },
+      {
+        "factor": "assignments submitted",
+        "direction": "increases risk",
+        "contribution": 0.927
+      },
+      {
+        "factor": "code_module = AAA",
+        "direction": "lowers risk",
+        "contribution": -0.568
+      }
+    ],
+    "signals": [
+      "very low online activity (bottom quartile)",
+      "inactive for 57 days at the check point",
+      "has not submitted any assignment that was already due",
+      "has previous unsuccessful attempts at this course"
+    ],
+    "note": "Decision-support only: an advisor must review every flag."
+  },
+  "true_outcome": "Withdrawn (at risk) - the model flagged this correctly",
+  "meaning": "The model puts this student in the High band and flags them for an advisor. The factors come from the model itself (TreeSHAP): the long inactivity and the unsubmitted assignments pushed the risk up. An advisor should reach out; the score is not a decision."
+}

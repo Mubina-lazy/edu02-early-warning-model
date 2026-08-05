@@ -1,5 +1,9 @@
 # Student Performance Early-Warning Model (EDU-02)
 
+> **Reviewing this project?** Start with [START_HERE.md](START_HERE.md) for the
+> recommended route, or [RUBRIC_EVIDENCE_MATRIX.md](RUBRIC_EVIDENCE_MATRIX.md)
+> to find the evidence for each grading criterion.
+
 An AI/ML Fundamentals capstone project: an early-warning classifier that flags
 students at risk of failing or withdrawing from an online course, using only
 information available in the first weeks of the course.

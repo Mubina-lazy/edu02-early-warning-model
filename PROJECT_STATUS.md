@@ -48,6 +48,13 @@ Complete - ready for submission preparation and defense rehearsal
   `requirements.txt` (mlflow requires pandas<3) and a setup cell that
   silently reused a stale clone.
 
+- **Repository structure aligned with the course example** (M8C6): added
+  `START_HERE.md`, `RUBRIC_EVIDENCE_MATRIX.md`, `docs/PROJECT_BRIEF.md`,
+  `docs/EXPERIMENT_LOG.md`, `docs/REPRODUCTION_TEST.md`,
+  `docs/RESPONSIBLE_AI_AND_LIMITATIONS.md`, `presentation/` (deck map, speaker
+  flow, Q&A bank, fallback evidence), `reports/results/` (machine-readable
+  metrics) and `tests/` (12 passing inference checks).
+
 ## Current task
 
 Submission preparation (course step 6): freeze the repository, prepare the

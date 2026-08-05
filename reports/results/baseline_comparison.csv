@@ -1,0 +1,5 @@
+model,split,threshold,recall_at_risk,precision_at_risk,f1_at_risk,pr_auc,notes
+Dummy (majority class),unseen test (2014J),0.5,0.0,0.0,0.0,,"flags nobody: the accuracy trap, 62% accurate and useless"
+Logistic Regression,unseen test (2014J),0.5,0.584,0.672,0.625,,"simple model baseline; higher precision, far lower recall"
+XGBoost (final),unseen test (2014J),0.5,0.624,0.654,0.638,0.714,same model at the conventional 0.5 threshold
+XGBoost (final),unseen test (2014J),0.327,0.76,0.583,0.66,0.714,"selected operating point, tuned on validation only"

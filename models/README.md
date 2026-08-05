@@ -19,6 +19,20 @@ Selection evidence: `reports/experiments_results.md`. Final unseen-data
 results: `reports/final_evaluation.md`. Every run is also logged in MLflow
 (`mlflow.db`, local, git-ignored).
 
+## Provenance and integrity
+
+| Field | Value |
+|---|---|
+| Source run | `exp-E4` / MLflow run `E4_xgboost` (see `docs/EXPERIMENT_LOG.md`) |
+| Framework | scikit-learn 1.9.0 Pipeline wrapping XGBoost 3.2.0 |
+| Fitted on | training presentations only: 2013B + 2013J (11,309 students) |
+| Operating threshold | 0.327, tuned on the validation cohort (2014B) |
+| Size | under 1 MB, so it is committed - no external download needed |
+| Versions | recorded inside `final_model_meta.json` under `fitted_with`; `src/predict.py` compares them at load time and warns on a mismatch |
+
+If the artifact is ever unavailable, it is fully reproducible: run the five
+commands above and `src/train_experiments.py` rewrites both files.
+
 ## How to use it
 
 ```python

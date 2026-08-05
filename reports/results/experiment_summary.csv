@@ -1,0 +1,8 @@
+run_id,approach,controlled_change,validation_recall,validation_f1,validation_pr_auc,validation_f1_at_tuned_threshold,test_metric,artifact_path,decision
+Dummy (majority),Dummy (majority),none - reference,0.0,0.0,0.457,,not used for tuning,,Reference floor
+Logistic Regression,Logistic Regression,linear model on the early-window features,0.565,0.67,0.803,,not used for tuning,,Reference: simplest real model
+LogReg balanced,LogReg balanced,class_weight=balanced,0.639,0.693,0.803,0.713,not used for tuning,,Rejected: weighting does not improve ranking
+Random Forest,Random Forest,"non-linear, min_samples_leaf=5",0.756,0.703,0.788,0.71,not used for tuning,,Rejected: lower PR-AUC than boosting
+Random Forest deep,Random Forest deep,min_samples_leaf=1 (unconstrained leaves),0.693,0.698,0.786,0.711,not used for tuning,,Rejected: no gain over the regularized forest
+XGBoost (final),XGBoost (final),"gradient boosting, depth 4, lr 0.05",0.698,0.707,0.81,0.716,"recall 0.76, f1 0.66",models/final_model.joblib,Selected
+XGBoost weighted,XGBoost weighted,boosting + scale_pos_weight,0.756,0.711,0.809,0.716,not used for tuning,,Rejected: equals E4 once the threshold is tuned
